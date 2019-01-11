@@ -19,6 +19,7 @@ use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUserService;
 use corbomite\cli\services\CliQuestionService;
 use corbomite\user\services\RegisterUserService;
+use corbomite\user\services\SetNewPasswordService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use corbomite\user\services\FetchCurrentUserService;
@@ -115,5 +116,8 @@ return [
             Di::get(SaveUserService::class),
             Di::get(PDO::class)
         );
+    },
+    SetNewPasswordService::class => function () {
+        return new SetNewPasswordService(Di::get(SaveUserService::class));
     },
 ];

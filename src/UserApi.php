@@ -10,6 +10,7 @@ use corbomite\user\services\FetchUserService;
 use corbomite\user\services\LogUserInService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\exceptions\UserExistsException;
+use corbomite\user\services\SetNewPasswordService;
 use corbomite\user\services\FetchCurrentUserService;
 use corbomite\user\services\LogCurrentUserOutService;
 use corbomite\user\exceptions\InvalidPasswordException;
@@ -135,5 +136,19 @@ class UserApi
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(ResetPasswordByTokenService::class);
         $service($token, $password);
+    }
+
+    /**
+     * @throws InvalidEmailAddressException
+     * @throws InvalidUserModelException
+     * @throws PasswordTooShortException
+     * @throws UserDoesNotExistException
+     * @throws UserExistsException
+     */
+    public function setNewPassword(UserModel $user, string $password): void
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(SetNewPasswordService::class);
+        $service($user, $password);
     }
 }
