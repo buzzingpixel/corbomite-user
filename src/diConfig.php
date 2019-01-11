@@ -19,6 +19,7 @@ use corbomite\user\services\RegisterUserService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\services\LogCurrentUserOutService;
 use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\ValidateUserPasswordService;
 
@@ -66,6 +67,12 @@ return [
             Di::get(FetchUserService::class),
             Di::get(SaveUserService::class),
             Di::get(CreateUserSessionService::class),
+            Di::get(CookieApi::class)
+        );
+    },
+    LogCurrentUserOutService::class => function () {
+        return new LogCurrentUserOutService(
+            new OrmFactory(),
             Di::get(CookieApi::class)
         );
     },

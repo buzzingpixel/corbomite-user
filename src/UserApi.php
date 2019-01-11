@@ -11,6 +11,7 @@ use corbomite\user\services\LogUserInService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\services\LogCurrentUserOutService;
 use corbomite\user\exceptions\InvalidPasswordException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\UserDoesNotExistException;
@@ -94,5 +95,12 @@ class UserApi
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(LogUserInService::class);
         $service($emailAddress, $password);
+    }
+
+    public function logCurrentUserOut(): void
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(LogCurrentUserOutService::class);
+        $service();
     }
 }
