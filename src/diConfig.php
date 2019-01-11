@@ -13,9 +13,11 @@ use corbomite\user\UserApi;
 use Ramsey\Uuid\UuidFactory;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
+use corbomite\user\actions\CreateUserAction;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUserService;
+use corbomite\cli\services\CliQuestionService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -30,6 +32,13 @@ return [
         return new CreateMigrationsAction(
             __DIR__ . '/migrations',
             new ConsoleOutput()
+        );
+    },
+    CreateUserAction::class => function () {
+        return new CreateUserAction(
+            Di::get(UserApi::class),
+            new ConsoleOutput(),
+            Di::get(CliQuestionService::class)
         );
     },
     UserApi::class => function () {

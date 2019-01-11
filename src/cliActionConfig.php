@@ -7,6 +7,7 @@ declare(strict_types=1);
  * @license Apache-2.0
  */
 
+use corbomite\user\actions\CreateUserAction;
 use corbomite\user\actions\CreateMigrationsAction;
 
 return [
@@ -16,6 +17,10 @@ return [
             'create-migrations' => [
                 'description' => 'Adds migrations to create user tables',
                 'class' => CreateMigrationsAction::class,
+            ],
+            'create' => [
+                'description' => 'Creates a user',
+                'class' => CreateUserAction::class,
             ],
         ],
     ],
