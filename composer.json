@@ -1,0 +1,38 @@
+{
+    "name": "buzzingpixel/corbomite-user",
+    "version": "1.0.0",
+    "description": "Corbomite User",
+    "authors": [
+        {
+            "name": "TJ Draper",
+            "email": "tj@buzzingpixel.com",
+            "homepage": "https://buzzingpixel.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "buzzingpixel/corbomite-di": "^1.0",
+        "buzzingpixel/corbomite-migrations": "^1.0",
+        "buzzingpixel/corbomite-db": "^1.0"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "squizlabs/php_codesniffer": "^3.4",
+        "phpmd/phpmd": "^2.6",
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "corbomite\\user\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "corbomite\\tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "diConfigFilePath": "src/diConfig.php",
+        "cliActionConfigFilePath": "src/actionConfig.php"
+    }
+}
