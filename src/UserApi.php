@@ -7,9 +7,11 @@ use corbomite\di\Di;
 use corbomite\user\models\UserModel;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
+use corbomite\user\services\LogUserInService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\exceptions\InvalidPasswordException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
@@ -78,5 +80,19 @@ class UserApi
             ValidateUserPasswordService::class
         );
         return $service($identifier, $password);
+    }
+
+    /**
+     * @throws UserExistsException
+     * @throws InvalidPasswordException
+     * @throws UserDoesNotExistException
+     * @throws InvalidUserModelException
+     * @throws InvalidEmailAddressException
+     */
+    public function logUserIn(string $emailAddress, string $password): void
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(LogUserInService::class);
+        $service($emailAddress, $password);
     }
 }

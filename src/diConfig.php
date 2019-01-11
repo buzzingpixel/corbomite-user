@@ -13,11 +13,13 @@ use Ramsey\Uuid\UuidFactory;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\services\SaveUserService;
+use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\ValidateUserPasswordService;
 
 return [
@@ -49,6 +51,22 @@ return [
     ValidateUserPasswordService::class => function () {
         return new ValidateUserPasswordService(
             Di::get(FetchUserService::class)
+        );
+    },
+    CreateUserSessionService::class => function () {
+        return new CreateUserSessionService(
+            new UuidFactory(),
+            new OrmFactory(),
+            Di::get(FetchUserService::class)
+        );
+    },
+    LogUserInService::class => function () {
+        return new LogUserInService(
+            Di::get(ValidateUserPasswordService::class),
+            Di::get(FetchUserService::class),
+            Di::get(SaveUserService::class),
+            Di::get(CreateUserSessionService::class),
+            Di::get(CookieApi::class)
         );
     },
 ];
