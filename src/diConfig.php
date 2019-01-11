@@ -8,6 +8,7 @@ declare(strict_types=1);
  */
 
 use corbomite\di\Di;
+use corbomite\db\PDO;
 use corbomite\user\UserApi;
 use Ramsey\Uuid\UuidFactory;
 use buzzingpixel\cookieapi\CookieApi;
@@ -22,6 +23,7 @@ use corbomite\user\services\FetchCurrentUserService;
 use corbomite\user\services\LogCurrentUserOutService;
 use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\ValidateUserPasswordService;
+use corbomite\user\services\SessionGarbageCollectionService;
 
 return [
     CreateMigrationsAction::class => function () {
@@ -75,5 +77,8 @@ return [
             new OrmFactory(),
             Di::get(CookieApi::class)
         );
+    },
+    SessionGarbageCollectionService::class => function () {
+        return new SessionGarbageCollectionService(Di::get(PDO::class));
     },
 ];
