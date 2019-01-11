@@ -12,6 +12,7 @@ use corbomite\user\UserApi;
 use Ramsey\Uuid\UuidFactory;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\services\SaveUserService;
+use corbomite\user\services\FetchUserService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -31,5 +32,8 @@ return [
     },
     SaveUserService::class => function () {
         return new SaveUserService(new OrmFactory(), new UuidFactory());
+    },
+    FetchUserService::class => function () {
+        return new FetchUserService(new OrmFactory());
     },
 ];
