@@ -24,6 +24,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use corbomite\user\services\FetchCurrentUserService;
 use corbomite\user\services\LogCurrentUserOutService;
 use corbomite\user\services\CreateUserSessionService;
+use corbomite\user\services\GeneratePasswordResetToken;
 use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\SessionGarbageCollectionService;
 
@@ -89,5 +90,11 @@ return [
     },
     SessionGarbageCollectionService::class => function () {
         return new SessionGarbageCollectionService(Di::get(PDO::class));
+    },
+    GeneratePasswordResetToken::class => function () {
+        return new GeneratePasswordResetToken(
+            new UuidFactory(),
+            new OrmFactory()
+        );
     },
 ];
