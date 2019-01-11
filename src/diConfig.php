@@ -27,6 +27,7 @@ use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\GeneratePasswordResetToken;
 use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\SessionGarbageCollectionService;
+use corbomite\user\services\ResetTokenGarbageCollectionService;
 
 return [
     CreateMigrationsAction::class => function () {
@@ -96,5 +97,8 @@ return [
             new UuidFactory(),
             new OrmFactory()
         );
+    },
+    ResetTokenGarbageCollectionService::class => function () {
+        return new ResetTokenGarbageCollectionService(Di::get(PDO::class));
     },
 ];

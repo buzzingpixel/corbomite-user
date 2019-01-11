@@ -8,10 +8,15 @@ declare(strict_types=1);
  */
 
 use corbomite\user\services\SessionGarbageCollectionService;
+use corbomite\user\services\ResetTokenGarbageCollectionService;
 
 return [
     [
         'class' => SessionGarbageCollectionService::class,
         'runEvery' => 'DayAtMidnight',
+    ],
+    [
+        'class' => ResetTokenGarbageCollectionService::class,
+        'runEvery' => 'FiveMinutes',
     ],
 ];
