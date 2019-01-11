@@ -14,7 +14,7 @@ use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetToken;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetTokenRecord;
 
-class GetUserByPasswordResetToken
+class GetUserByPasswordResetTokenService
 {
     private $ormFactory;
     private $fetchUser;
