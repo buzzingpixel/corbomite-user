@@ -10,12 +10,14 @@ declare(strict_types=1);
 use corbomite\di\Di;
 use corbomite\user\UserApi;
 use Ramsey\Uuid\UuidFactory;
+use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use corbomite\user\services\FetchCurrentUserService;
 
 return [
     CreateMigrationsAction::class => function () {
@@ -35,5 +37,12 @@ return [
     },
     FetchUserService::class => function () {
         return new FetchUserService(new OrmFactory());
+    },
+    FetchCurrentUserService::class => function () {
+        return new FetchCurrentUserService(
+            new OrmFactory(),
+            Di::get(CookieApi::class),
+            Di::get(FetchUserService::class)
+        );
     },
 ];

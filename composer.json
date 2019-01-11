@@ -14,7 +14,8 @@
         "buzzingpixel/corbomite-di": "^1.0",
         "buzzingpixel/corbomite-migrations": "^1.0",
         "buzzingpixel/corbomite-db": "^1.0",
-        "ramsey/uuid": "^3.8"
+        "ramsey/uuid": "^3.8",
+        "buzzingpixel/cookie-api": "^1.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
@@ -34,6 +35,6 @@
     },
     "extra": {
         "diConfigFilePath": "src/diConfig.php",
-        "cliActionConfigFilePath": "src/actionConfig.php"
+        "cliActionConfigFilePath": "src/cliActionConfig.php"
     }
 }

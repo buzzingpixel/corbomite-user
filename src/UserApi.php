@@ -9,6 +9,7 @@ use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\exceptions\UserExistsException;
+use corbomite\user\services\FetchCurrentUserService;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
@@ -55,5 +56,12 @@ class UserApi
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUserService::class);
         return $service($identifier);
+    }
+
+    public function fetchCurrentUser(): ?UserModel
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(FetchCurrentUserService::class);
+        return $service();
     }
 }
