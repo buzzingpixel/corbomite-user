@@ -13,6 +13,7 @@ use corbomite\user\services\FetchCurrentUserService;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\exceptions\InvalidEmailAddressException;
 
 class UserApi
@@ -63,5 +64,19 @@ class UserApi
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchCurrentUserService::class);
         return $service();
+    }
+
+    /**
+     * @throws UserDoesNotExistException
+     */
+    public function validateUserPassword(
+        string $identifier,
+        string $password
+    ): bool {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(
+            ValidateUserPasswordService::class
+        );
+        return $service($identifier, $password);
     }
 }

@@ -18,6 +18,7 @@ use corbomite\user\services\RegisterUserService;
 use corbomite\user\actions\CreateMigrationsAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\services\ValidateUserPasswordService;
 
 return [
     CreateMigrationsAction::class => function () {
@@ -42,6 +43,11 @@ return [
         return new FetchCurrentUserService(
             new OrmFactory(),
             Di::get(CookieApi::class),
+            Di::get(FetchUserService::class)
+        );
+    },
+    ValidateUserPasswordService::class => function () {
+        return new ValidateUserPasswordService(
             Di::get(FetchUserService::class)
         );
     },
