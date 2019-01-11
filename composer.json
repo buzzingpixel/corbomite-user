@@ -21,7 +21,8 @@
         "roave/security-advisories": "dev-master",
         "squizlabs/php_codesniffer": "^3.4",
         "phpmd/phpmd": "^2.6",
-        "phpunit/phpunit": "^7.5"
+        "phpunit/phpunit": "^7.5",
+        "buzzingpixel/corbomite-schedule": "^1.0.1"
     },
     "autoload": {
         "psr-4": {
@@ -35,6 +36,7 @@
     },
     "extra": {
         "diConfigFilePath": "src/diConfig.php",
-        "cliActionConfigFilePath": "src/cliActionConfig.php"
+        "cliActionConfigFilePath": "src/cliActionConfig.php",
+        "scheduleConfigFilePath": "src/scheduleConfig.php"
     }
 }
