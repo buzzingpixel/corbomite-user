@@ -18,6 +18,7 @@ use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
 use corbomite\user\services\ValidateUserPasswordService;
+use corbomite\user\services\GetUserByPasswordResetToken;
 use corbomite\user\exceptions\InvalidEmailAddressException;
 
 class UserApi
@@ -110,5 +111,12 @@ class UserApi
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GeneratePasswordResetToken::class);
         return $service($user);
+    }
+
+    public function getUserByPasswordResetToken(string $token): ?UserModel
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(GetUserByPasswordResetToken::class);
+        return $service($token);
     }
 }

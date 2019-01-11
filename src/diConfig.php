@@ -25,6 +25,7 @@ use corbomite\user\services\FetchCurrentUserService;
 use corbomite\user\services\LogCurrentUserOutService;
 use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\GeneratePasswordResetToken;
+use corbomite\user\services\GetUserByPasswordResetToken;
 use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\SessionGarbageCollectionService;
 use corbomite\user\services\ResetTokenGarbageCollectionService;
@@ -100,5 +101,11 @@ return [
     },
     ResetTokenGarbageCollectionService::class => function () {
         return new ResetTokenGarbageCollectionService(Di::get(PDO::class));
+    },
+    GetUserByPasswordResetToken::class => function () {
+        return new GetUserByPasswordResetToken(
+            new OrmFactory(),
+            Di::get(FetchUserService::class)
+        );
     },
 ];
