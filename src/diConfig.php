@@ -17,6 +17,7 @@ use corbomite\user\actions\CreateUserAction;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUserService;
+use corbomite\user\services\FetchUsersService;
 use corbomite\cli\services\CliQuestionService;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\services\SetNewPasswordService;
@@ -28,6 +29,7 @@ use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\GeneratePasswordResetToken;
 use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\ResetPasswordByTokenService;
+use corbomite\user\transformers\UserRecordToModelTransformer;
 use corbomite\user\services\SessionGarbageCollectionService;
 use corbomite\user\services\ResetTokenGarbageCollectionService;
 use corbomite\user\services\GetUserByPasswordResetTokenService;
@@ -56,7 +58,16 @@ return [
         return new SaveUserService(new OrmFactory(), new UuidFactory());
     },
     FetchUserService::class => function () {
-        return new FetchUserService(new OrmFactory());
+        return new FetchUserService(
+            new OrmFactory(),
+            Di::get(UserRecordToModelTransformer::class)
+        );
+    },
+    FetchUsersService::class => function () {
+        return new FetchUsersService(
+            new OrmFactory(),
+            Di::get(UserRecordToModelTransformer::class)
+        );
     },
     FetchCurrentUserService::class => function () {
         return new FetchCurrentUserService(
@@ -119,5 +130,8 @@ return [
     },
     SetNewPasswordService::class => function () {
         return new SetNewPasswordService(Di::get(SaveUserService::class));
+    },
+    UserRecordToModelTransformer::class => function () {
+        return new UserRecordToModelTransformer();
     },
 ];

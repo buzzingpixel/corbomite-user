@@ -9,20 +9,23 @@ declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use DateTime;
-use DateTimeZone;
 use corbomite\user\data\User\User;
 use corbomite\user\models\UserModel;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\User\UserRecord;
+use corbomite\user\transformers\UserRecordToModelTransformer;
 
 class FetchUserService
 {
     private $ormFactory;
+    private $userRecordToModel;
 
-    public function __construct(OrmFactory $ormFactory)
-    {
+    public function __construct(
+        OrmFactory $ormFactory,
+        UserRecordToModelTransformer $userRecordToModel
+    ) {
         $this->ormFactory = $ormFactory;
+        $this->userRecordToModel = $userRecordToModel;
     }
 
     public function __invoke(string $identifier): ?UserModel
@@ -55,19 +58,7 @@ class FetchUserService
             return null;
         }
 
-        /** @noinspection PhpUnhandledExceptionInspection */
-        $addedAt = new DateTime(
-            $record->added_at,
-            new DateTimeZone($record->added_at_time_zone)
-        );
-
-        $addedAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
-
-        $model = new UserModel();
-        $model->guid($record->guid);
-        $model->emailAddress($record->email_address);
-        $model->passwordHash($record->password_hash);
-        $model->addedAt($addedAt);
+        $model = $this->userRecordToModel->transform($record);
 
         $this->storedUsersByEmail[$model->emailAddress()] = $model;
         $this->storedUsersByIdentifier[$model->guid()] = $model;

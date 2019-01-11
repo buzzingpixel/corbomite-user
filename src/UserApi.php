@@ -8,6 +8,8 @@ use corbomite\user\models\UserModel;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\LogUserInService;
+use corbomite\user\services\FetchUsersService;
+use corbomite\user\models\FetchUsersParamsModel;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\services\SetNewPasswordService;
@@ -65,6 +67,18 @@ class UserApi
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUserService::class);
         return $service($identifier);
+    }
+
+    public function createFetchUserParamsModel(array $props = []): FetchUsersParamsModel
+    {
+        return new FetchUsersParamsModel($props);
+    }
+
+    public function fetchUsers(FetchUsersParamsModel $paramsModel): array
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(FetchUsersService::class);
+        return $service($paramsModel);
     }
 
     public function fetchCurrentUser(): ?UserModel
