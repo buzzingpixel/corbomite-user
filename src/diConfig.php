@@ -10,9 +10,13 @@ declare(strict_types=1);
 use corbomite\di\Di;
 use corbomite\db\PDO;
 use corbomite\user\UserApi;
+use Zend\Diactoros\Response;
 use Ramsey\Uuid\UuidFactory;
 use buzzingpixel\cookieapi\CookieApi;
+use corbomite\flashdata\FlashDataApi;
 use corbomite\db\Factory as OrmFactory;
+use corbomite\requestdatastore\DataStore;
+use corbomite\user\http\actions\LogInAction;
 use corbomite\user\actions\CreateUserAction;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\LogUserInService;
@@ -133,5 +137,13 @@ return [
     },
     UserRecordToModelTransformer::class => function () {
         return new UserRecordToModelTransformer();
+    },
+    LogInAction::class => function () {
+        return new LogInAction(
+            Di::get(UserApi::class),
+            new Response(),
+            Di::get(FlashDataApi::class),
+            Di::get(DataStore::class)
+        );
     },
 ];

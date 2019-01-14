@@ -42,6 +42,33 @@ $userApi = Di::get(\corbomite\user\UserApi::class);
 
 Make sure you're running the schedule command every minute on a cron job. Corbomite User has two commands that it schedules that need to run in order for everything to work right.
 
+### Http Actions
+
+#### Log In Action
+
+The Login Action is provided to make it easy for you to provide a login form. Here's an example:
+
+```twig
+{% if dataStore().storeItem('LogInAction.hasError') %}
+    <div class="ErrorBanner">
+        There was an error logging you in!
+    </div>
+{% endif %}
+<form method="post" accept-charset="UTF-8">
+    {{ getCsrfInput() }}
+    <input type="hidden" name="action" value="logIn">
+    <input type="email" name="email">
+    <input type="password" name="password">
+    <input type="submit">
+</form>
+```
+
+```twig
+{% if flashDataApi().getFlashData().getStoreItem('LogInAction').dataItem('success') ?? false %}
+    Logged in successfully!
+{% endif %}
+```
+
 ## License
 
 Copyright 2019 BuzzingPixel, LLC
