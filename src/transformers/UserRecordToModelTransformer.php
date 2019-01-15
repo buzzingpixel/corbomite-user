@@ -37,7 +37,10 @@ class UserRecordToModelTransformer implements UserRecordToModelTransformerInterf
             'guid' => $record->guid,
             'emailAddress' => $record->email_address,
             'passwordHash' => $record->password_hash,
-            'userData' => json_decode($record->user_data),
+            'userData' => json_decode(
+                \is_string($record->user_data) ? $record->user_data : '',
+                true
+            ),
             'addedAt' => $addedAt,
         ]);
     }

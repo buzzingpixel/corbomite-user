@@ -117,6 +117,7 @@ class SaveUserService
         $record->guid = $userModel->guid();
         $record->email_address = $userModel->emailAddress();
         $record->password_hash = $userModel->passwordHash();
+        $record->user_data = json_encode($userModel->userData());
 
         $this->ormFactory->makeOrm()->persist($record);
     }
