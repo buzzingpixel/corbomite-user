@@ -1,6 +1,6 @@
 {
     "name": "buzzingpixel/corbomite-user",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Corbomite User",
     "authors": [
         {
@@ -45,7 +45,7 @@
         "scheduleConfigFilePath": "src/scheduleConfig.php",
         "httpActionConfigFilePath": "src/httpActionConfig.php",
         "twigExtensions": [
-            "corbomite\\flashdata\\twigextensions\\UserTwigExtension"
+            "corbomite\\user\\twigextensions\\UserTwigExtension"
         ]
     }
 }

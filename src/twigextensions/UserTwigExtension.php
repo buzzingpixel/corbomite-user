@@ -7,7 +7,7 @@ declare(strict_types=1);
  * @license Apache-2.0
  */
 
-namespace corbomite\flashdata\twigextensions;
+namespace corbomite\user\twigextensions;
 
 use Twig_Function;
 use Twig_Extension;
