@@ -5,9 +5,9 @@ namespace corbomite\user\http\actions;
 
 use Throwable;
 use LogicException;
-use corbomite\user\UserApi;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use corbomite\user\interfaces\UserApiInterface;
 use corbomite\requestdatastore\DataStoreInterface;
 use corbomite\flashdata\interfaces\FlashDataApiInterface;
 
@@ -19,7 +19,7 @@ class LogInAction
     private $requestDataStore;
 
     public function __construct(
-        UserApi $userApi,
+        UserApiInterface $userApi,
         ResponseInterface $response,
         FlashDataApiInterface $flashDataApi,
         DataStoreInterface $requestDataStore

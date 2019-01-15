@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace corbomite\user\actions;
 
-use corbomite\user\UserApi;
 use corbomite\cli\services\CliQuestionService;
+use corbomite\user\interfaces\UserApiInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateUserAction
@@ -20,7 +20,7 @@ class CreateUserAction
     private $cliQuestionService;
 
     public function __construct(
-        UserApi $userApi,
+        UserApiInterface $userApi,
         OutputInterface $consoleOutput,
         CliQuestionService $cliQuestionService
     ) {

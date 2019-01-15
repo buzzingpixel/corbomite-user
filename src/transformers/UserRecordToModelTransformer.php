@@ -13,15 +13,17 @@ use DateTime;
 use DateTimeZone;
 use corbomite\user\models\UserModel;
 use corbomite\user\data\User\UserRecord;
+use corbomite\user\interfaces\UserModelInterface;
+use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
 
-class UserRecordToModelTransformer
+class UserRecordToModelTransformer implements UserRecordToModelTransformerInterface
 {
-    public function __invoke(UserRecord $record): UserModel
+    public function __invoke(UserRecord $record): UserModelInterface
     {
         return $this->transform($record);
     }
 
-    public function transform(UserRecord $record): UserModel
+    public function transform(UserRecord $record): UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $addedAt = new DateTime(
@@ -35,6 +37,7 @@ class UserRecordToModelTransformer
             'guid' => $record->guid,
             'emailAddress' => $record->email_address,
             'passwordHash' => $record->password_hash,
+            'userData' => json_decode($record->user_data),
             'addedAt' => $addedAt,
         ]);
     }

@@ -10,8 +10,9 @@ declare(strict_types=1);
 namespace corbomite\user\models;
 
 use DateTime;
+use corbomite\user\interfaces\UserModelInterface;
 
-class UserModel
+class UserModel implements UserModelInterface
 {
     public function __construct(array $props = [])
     {
@@ -43,6 +44,48 @@ class UserModel
         return $this->passwordHash = $passwordHash !== null ?
             $passwordHash :
             $this->passwordHash;
+    }
+
+    private $userData = [];
+
+    public function userData(?array $userData = null): array
+    {
+        return $this->userData = $userData !== null ? $userData : $this->userData;
+    }
+
+    public function userDataItem(string $key, $val = null)
+    {
+        if ($val !== null) {
+            $this->setUserDataItem($key, $val);
+        }
+
+        return $this->getUserDataItem($key);
+    }
+
+    private function setUserDataItem(string $key, $val)
+    {
+        $loc = &$this->userData;
+
+        foreach (explode('.', $key) as $step) {
+            $loc = &$loc[$step];
+        }
+
+        $loc = $val;
+    }
+
+    private function getUserDataItem(string $key)
+    {
+        $val = $this->userData;
+
+        foreach (explode('.', $key) as $step) {
+            if (! isset($val[$step])) {
+                return null;
+            }
+
+            $val = $val[$step];
+        }
+
+        return $val;
     }
 
     private $addedAt;

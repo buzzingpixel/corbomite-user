@@ -10,11 +10,11 @@ declare(strict_types=1);
 namespace corbomite\user\services;
 
 use corbomite\user\data\User\User;
-use corbomite\user\models\UserModel;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\User\UserSelect;
-use corbomite\user\models\FetchUsersParamsModel;
-use corbomite\user\transformers\UserRecordToModelTransformer;
+use corbomite\user\interfaces\UserModelInterface;
+use corbomite\user\interfaces\FetchUsersParamsModelInterface;
+use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
 
 class FetchUsersService
 {
@@ -23,24 +23,24 @@ class FetchUsersService
 
     public function __construct(
         OrmFactory $ormFactory,
-        UserRecordToModelTransformer $userRecordToModel
+        UserRecordToModelTransformerInterface $userRecordToModel
     ) {
         $this->ormFactory = $ormFactory;
         $this->userRecordToModel = $userRecordToModel;
     }
 
     /**
-     * @return UserModel[]
+     * @return UserModelInterface[]
      */
-    public function __invoke(FetchUsersParamsModel $paramsModel): array
+    public function __invoke(FetchUsersParamsModelInterface $paramsModel): array
     {
         return $this->fetch($paramsModel);
     }
 
     /**
-     * @return UserModel[]
+     * @return UserModelInterface[]
      */
-    public function fetch(FetchUsersParamsModel $paramsModel): array
+    public function fetch(FetchUsersParamsModelInterface $paramsModel): array
     {
         $models = [];
 
@@ -51,7 +51,7 @@ class FetchUsersService
         return $models;
     }
 
-    private function buildQuery(FetchUsersParamsModel $paramsModel): UserSelect
+    private function buildQuery(FetchUsersParamsModelInterface $paramsModel): UserSelect
     {
         $query = $this->ormFactory->makeOrm()->select(User::class)
             ->offset($paramsModel->offset())

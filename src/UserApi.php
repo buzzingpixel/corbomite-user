@@ -10,13 +10,14 @@ declare(strict_types=1);
 namespace corbomite\user;
 
 use corbomite\di\Di;
-use corbomite\user\models\UserModel;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUsersService;
+use corbomite\user\interfaces\UserApiInterface;
 use corbomite\user\models\FetchUsersParamsModel;
 use corbomite\user\services\RegisterUserService;
+use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\services\SetNewPasswordService;
 use corbomite\user\services\FetchCurrentUserService;
@@ -30,9 +31,10 @@ use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\ResetPasswordByTokenService;
 use corbomite\user\exceptions\InvalidResetTokenException;
 use corbomite\user\exceptions\InvalidEmailAddressException;
+use corbomite\user\interfaces\FetchUsersParamsModelInterface;
 use corbomite\user\services\GetUserByPasswordResetTokenService;
 
-class UserApi
+class UserApi implements UserApiInterface
 {
     private $di;
 
@@ -61,33 +63,36 @@ class UserApi
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function saveUser(UserModel $user): void
+    public function saveUser(UserModelInterface $user): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SaveUserService::class);
         $service($user);
     }
 
-    public function fetchUser(string $identifier): ?UserModel
+    public function fetchUser(string $identifier): ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUserService::class);
         return $service($identifier);
     }
 
-    public function createFetchUserParamsModel(array $props = []): FetchUsersParamsModel
+    public function createFetchUserParamsModel(array $props = []): FetchUsersParamsModelInterface
     {
         return new FetchUsersParamsModel($props);
     }
 
-    public function fetchUsers(FetchUsersParamsModel $paramsModel): array
+    /**
+     * @return UserModelInterface[]
+     */
+    public function fetchUsers(FetchUsersParamsModelInterface $paramsModel): array
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUsersService::class);
         return $service($paramsModel);
     }
 
-    public function fetchCurrentUser(): ?UserModel
+    public function fetchCurrentUser(): ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchCurrentUserService::class);
@@ -129,14 +134,14 @@ class UserApi
         $service();
     }
 
-    public function generatePasswordResetToken(UserModel $user): string
+    public function generatePasswordResetToken(UserModelInterface $user): string
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GeneratePasswordResetToken::class);
         return $service($user);
     }
 
-    public function getUserByPasswordResetToken(string $token): ?UserModel
+    public function getUserByPasswordResetToken(string $token): ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GetUserByPasswordResetTokenService::class);
@@ -165,7 +170,7 @@ class UserApi
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function setNewPassword(UserModel $user, string $password): void
+    public function setNewPassword(UserModelInterface $user, string $password): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SetNewPasswordService::class);

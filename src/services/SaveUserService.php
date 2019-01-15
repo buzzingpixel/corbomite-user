@@ -12,10 +12,10 @@ namespace corbomite\user\services;
 use DateTime;
 use DateTimeZone;
 use corbomite\user\data\User\User;
-use corbomite\user\models\UserModel;
 use Ramsey\Uuid\UuidFactoryInterface;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\User\UserRecord;
+use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
@@ -40,7 +40,7 @@ class SaveUserService
      * @throws UserDoesNotExistException
      * @throws InvalidEmailAddressException
      */
-    public function __invoke(UserModel $userModel): void
+    public function __invoke(UserModelInterface $userModel): void
     {
         $this->saveUser($userModel);
     }
@@ -51,7 +51,7 @@ class SaveUserService
      * @throws UserDoesNotExistException
      * @throws InvalidEmailAddressException
      */
-    public function saveUser(UserModel $userModel): void
+    public function saveUser(UserModelInterface $userModel): void
     {
         if (! $userModel->passwordHash() ||
             ! $userModel->emailAddress()
@@ -74,7 +74,7 @@ class SaveUserService
     /**
      * @throws UserExistsException
      */
-    private function saveNewUser(UserModel $userModel): void
+    private function saveNewUser(UserModelInterface $userModel): void
     {
         if ($this->fetchRecord($userModel->emailAddress())) {
             throw new UserExistsException();
@@ -91,6 +91,7 @@ class SaveUserService
         $record->guid = $this->uuidFactory->uuid4()->toString();
         $record->email_address = $userModel->emailAddress();
         $record->password_hash = $userModel->passwordHash();
+        $record->user_data = json_encode($userModel->userData());
         $record->added_at = $dateTime->format('Y-m-d H:i:s');
         $record->added_at_time_zone = $dateTime->getTimezone()->getName();
 
@@ -107,7 +108,7 @@ class SaveUserService
     /**
      * @throws UserDoesNotExistException
      */
-    private function saveExistingUser(UserModel $userModel): void
+    private function saveExistingUser(UserModelInterface $userModel): void
     {
         if (! $record = $this->fetchRecord($userModel->emailAddress())) {
             throw new UserDoesNotExistException();

@@ -12,8 +12,8 @@ namespace corbomite\user\services;
 use DateTime;
 use DateTimeZone;
 use Ramsey\Uuid\UuidFactory;
-use corbomite\user\models\UserModel;
 use corbomite\db\Factory as OrmFactory;
+use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetToken;
 
 class GeneratePasswordResetToken
@@ -29,12 +29,12 @@ class GeneratePasswordResetToken
         $this->ormFactory = $ormFactory;
     }
 
-    public function __invoke(UserModel $userModel): string
+    public function __invoke(UserModelInterface $userModel): string
     {
         return $this->generate($userModel);
     }
 
-    public function generate(UserModel $userModel): string
+    public function generate(UserModelInterface $userModel): string
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $dateTime = new DateTime();

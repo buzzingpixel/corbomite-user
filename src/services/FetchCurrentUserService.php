@@ -12,10 +12,10 @@ namespace corbomite\user\services;
 use DateTime;
 use Exception;
 use DateTimeZone;
-use corbomite\user\models\UserModel;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
+use corbomite\user\interfaces\UserModelInterface;
 
 class FetchCurrentUserService
 {
@@ -33,12 +33,12 @@ class FetchCurrentUserService
         $this->fetchUser = $fetchUser;
     }
 
-    public function __invoke(): ?UserModel
+    public function __invoke(): ?UserModelInterface
     {
         return $this->fetchCurrentUser();
     }
 
-    public function fetchCurrentUser(): ?UserModel
+    public function fetchCurrentUser(): ?UserModelInterface
     {
         $cookie = $this->cookieApi->retrieveCookie('user_session_token');
 

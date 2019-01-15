@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use corbomite\user\models\UserModel;
 use corbomite\db\Factory as OrmFactory;
+use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetToken;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetTokenRecord;
 
@@ -27,12 +27,12 @@ class GetUserByPasswordResetTokenService
         $this->fetchUser = $fetchUser;
     }
 
-    public function __invoke(string $token): ?UserModel
+    public function __invoke(string $token): ?UserModelInterface
     {
         return $this->get($token);
     }
 
-    public function get(string $token): ?UserModel
+    public function get(string $token): ?UserModelInterface
     {
         $record = $this->fetchRecord($token);
 

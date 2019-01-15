@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use corbomite\user\models\UserModel;
+use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\InvalidUserModelException;
@@ -32,7 +32,7 @@ class SetNewPasswordService
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function __invoke(UserModel $model, string $password): void
+    public function __invoke(UserModelInterface $model, string $password): void
     {
         $this->set($model, $password);
     }
@@ -44,7 +44,7 @@ class SetNewPasswordService
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function set(UserModel $model, string $password): void
+    public function set(UserModelInterface $model, string $password): void
     {
         if (\strlen($password) < RegisterUserService::MIN_PASSWORD_LENGTH) {
             throw new PasswordTooShortException();

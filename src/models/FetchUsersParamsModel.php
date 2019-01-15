@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace corbomite\user\models;
 
-class FetchUsersParamsModel
+use corbomite\user\interfaces\FetchUsersParamsModelInterface;
+
+class FetchUsersParamsModel implements FetchUsersParamsModelInterface
 {
     public function __construct(array $props = [])
     {

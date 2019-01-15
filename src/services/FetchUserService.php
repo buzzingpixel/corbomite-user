@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace corbomite\user\services;
 
 use corbomite\user\data\User\User;
-use corbomite\user\models\UserModel;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\User\UserRecord;
-use corbomite\user\transformers\UserRecordToModelTransformer;
+use corbomite\user\interfaces\UserModelInterface;
+use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
 
 class FetchUserService
 {
@@ -22,13 +22,13 @@ class FetchUserService
 
     public function __construct(
         OrmFactory $ormFactory,
-        UserRecordToModelTransformer $userRecordToModel
+        UserRecordToModelTransformerInterface $userRecordToModel
     ) {
         $this->ormFactory = $ormFactory;
         $this->userRecordToModel = $userRecordToModel;
     }
 
-    public function __invoke(string $identifier): ?UserModel
+    public function __invoke(string $identifier): ?UserModelInterface
     {
         return $this->fetchUser($identifier);
     }
@@ -39,7 +39,7 @@ class FetchUserService
     public function fetchUser(
         string $identifier,
         $bypassCache = false
-    ): ?UserModel {
+    ): ?UserModelInterface {
         if (! $bypassCache &&
             isset($this->storedUsersByEmail[$identifier])
         ) {
