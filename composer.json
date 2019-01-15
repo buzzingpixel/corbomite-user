@@ -26,7 +26,8 @@
         "squizlabs/php_codesniffer": "^3.4",
         "phpmd/phpmd": "^2.6",
         "phpunit/phpunit": "^7.5",
-        "buzzingpixel/corbomite-schedule": "^1.0.1"
+        "buzzingpixel/corbomite-schedule": "^1.0.1",
+        "twig/twig": "^2.6"
     },
     "autoload": {
         "psr-4": {
@@ -42,6 +43,9 @@
         "diConfigFilePath": "src/diConfig.php",
         "cliActionConfigFilePath": "src/cliActionConfig.php",
         "scheduleConfigFilePath": "src/scheduleConfig.php",
-        "httpActionConfigFilePath": "src/httpActionConfig.php"
+        "httpActionConfigFilePath": "src/httpActionConfig.php",
+        "twigExtensions": [
+            "corbomite\\flashdata\\twigextensions\\UserTwigExtension"
+        ]
     }
 }

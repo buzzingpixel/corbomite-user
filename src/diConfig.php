@@ -33,6 +33,7 @@ use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\GeneratePasswordResetToken;
 use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\ResetPasswordByTokenService;
+use corbomite\flashdata\twigextensions\UserTwigExtension;
 use corbomite\user\transformers\UserRecordToModelTransformer;
 use corbomite\user\services\SessionGarbageCollectionService;
 use corbomite\user\services\ResetTokenGarbageCollectionService;
@@ -145,5 +146,8 @@ return [
             Di::get(FlashDataApi::class),
             Di::get(DataStore::class)
         );
+    },
+    UserTwigExtension::class => function () {
+        return new UserTwigExtension(Di::get(UserApi::class));
     },
 ];
