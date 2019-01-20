@@ -34,8 +34,10 @@ services:
     ports:
       - "20034:3306"
   utility:
-    image: ubuntu:latest
+    image: buzzingpixel/utility:latest
     container_name: utility-corbomite-user
+    environment:
+      HOSTNAME: utility-corbomite-user
     volumes:
       - .:/app:delegated
       - ./dev/null:/app/.git:delegated
