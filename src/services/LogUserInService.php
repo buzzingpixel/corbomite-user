@@ -11,10 +11,13 @@ namespace corbomite\user\services;
 
 use DateTime;
 use buzzingpixel\cookieapi\CookieApi;
+use src\app\projects\events\UserAfterLogInEvent;
+use src\app\projects\events\UserBeforeLogInEvent;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\InvalidPasswordException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
 
 class LogUserInService
@@ -24,19 +27,22 @@ class LogUserInService
     private $saveUser;
     private $createUserSession;
     private $cookieApi;
+    private $dispatcher;
 
     public function __construct(
         ValidateUserPasswordService $validateUserPassword,
         FetchUserService $fetchUser,
         SaveUserService $saveUser,
         CreateUserSessionService $createUserSession,
-        CookieApi $cookieApi
+        CookieApi $cookieApi,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->validateUserPassword = $validateUserPassword;
         $this->fetchUser = $fetchUser;
         $this->saveUser = $saveUser;
         $this->createUserSession = $createUserSession;
         $this->cookieApi = $cookieApi;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -70,6 +76,10 @@ class LogUserInService
             throw new UserDoesNotExistException();
         }
 
+        $before = new UserBeforeLogInEvent($user);
+
+        $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+
         if (password_needs_rehash($user->passwordHash(), PASSWORD_DEFAULT)) {
             $user->passwordHash(password_hash($password, PASSWORD_DEFAULT));
             $this->saveUser->saveUser($user);
@@ -89,5 +99,9 @@ class LogUserInService
         );
 
         $this->cookieApi->saveCookie($cookie);
+
+        $after = new UserAfterLogInEvent($user);
+
+        $this->dispatcher->dispatch($after->provider(), $after->name(), $after);
     }
 }

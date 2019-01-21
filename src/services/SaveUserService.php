@@ -13,22 +13,28 @@ use PDO;
 use DateTime;
 use DateTimeZone;
 use Ramsey\Uuid\UuidFactoryInterface;
+use src\app\projects\events\UserAfterSaveEvent;
+use src\app\projects\events\UserBeforeSaveEvent;
 use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
 
 class SaveUserService
 {
     private $pdo;
+    private $dispatcher;
     private $uuidFactory;
 
     public function __construct(
         PDO $pdo,
-        UuidFactoryInterface $uuidFactory
+        UuidFactoryInterface $uuidFactory,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->pdo = $pdo;
+        $this->dispatcher = $dispatcher;
         $this->uuidFactory = $uuidFactory;
     }
 
@@ -62,11 +68,28 @@ class SaveUserService
         }
 
         if (! $model->guid()) {
+            $before = new UserBeforeSaveEvent($model, true);
+
+            $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+
             $this->saveNewUser($model);
+
+            $after = new UserAfterSaveEvent($model, true);
+
+            $this->dispatcher->dispatch($after->provider(), $after->name(), $after);
+
             return;
         }
 
+        $before = new UserBeforeSaveEvent($model, false);
+
+        $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+
         $this->saveExistingUser($model);
+
+        $after = new UserAfterSaveEvent($model, false);
+
+        $this->dispatcher->dispatch($after->provider(), $after->name(), $after);
     }
 
     /**

@@ -14,17 +14,24 @@ use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\InvalidUserModelException;
 use corbomite\user\exceptions\UserDoesNotExistException;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
+use src\app\projects\events\UserAfterRegisterEvent;
+use src\app\projects\events\UserBeforeRegisterEvent;
 
 class RegisterUserService
 {
     public const MIN_PASSWORD_LENGTH = 8;
 
     private $saveUser;
+    private $dispatcher;
 
-    public function __construct(SaveUserService $saveUser)
-    {
+    public function __construct(
+        SaveUserService $saveUser,
+        EventDispatcherInterface $dispatcher
+    ) {
         $this->saveUser = $saveUser;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -56,6 +63,14 @@ class RegisterUserService
         $model->emailAddress($emailAddress);
         $model->passwordHash(password_hash($password, PASSWORD_DEFAULT));
 
+        $before = new UserBeforeRegisterEvent($model);
+
+        $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+
         $this->saveUser->saveUser($model);
+
+        $after = new UserAfterRegisterEvent($model);
+
+        $this->dispatcher->dispatch($after->name(), $after->name(), $after);
     }
 }

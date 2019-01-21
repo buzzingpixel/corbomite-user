@@ -12,6 +12,7 @@ use corbomite\db\PDO;
 use corbomite\user\UserApi;
 use Zend\Diactoros\Response;
 use Ramsey\Uuid\UuidFactory;
+use corbomite\events\EventDispatcher;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\flashdata\FlashDataApi;
 use corbomite\db\Factory as DbFactory;
@@ -60,10 +61,17 @@ return [
         return new UserApi(new Di(), new DbFactory());
     },
     RegisterUserService::class => function () {
-        return new RegisterUserService(Di::get(SaveUserService::class));
+        return new RegisterUserService(
+            Di::get(SaveUserService::class),
+            Di::get(EventDispatcher::class)
+        );
     },
     SaveUserService::class => function () {
-        return new SaveUserService(Di::get(PDO::class), new UuidFactory());
+        return new SaveUserService(
+            Di::get(PDO::class),
+            new UuidFactory(),
+            Di::get(EventDispatcher::class)
+        );
     },
     FetchUserService::class => function () {
         return new FetchUserService(
@@ -103,7 +111,8 @@ return [
             Di::get(FetchUserService::class),
             Di::get(SaveUserService::class),
             Di::get(CreateUserSessionService::class),
-            Di::get(CookieApi::class)
+            Di::get(CookieApi::class),
+            Di::get(EventDispatcher::class)
         );
     },
     LogCurrentUserOutService::class => function () {
@@ -155,6 +164,9 @@ return [
         return new UserTwigExtension(Di::get(UserApi::class));
     },
     DeleteUserService::class => function () {
-        return new DeleteUserService(Di::get(PDO::class));
+        return new DeleteUserService(
+            Di::get(PDO::class),
+            Di::get(EventDispatcher::class)
+        );
     },
 ];

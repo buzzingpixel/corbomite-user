@@ -1,6 +1,6 @@
 {
     "name": "buzzingpixel/corbomite-user",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Corbomite User",
     "authors": [
         {
@@ -20,7 +20,8 @@
         "buzzingpixel/cookie-api": "^1.1",
         "buzzingpixel/request-data-store": "^1.0.1",
         "buzzingpixel/corbomite-flash-data": "^1.0.1",
-        "zendframework/zend-diactoros": "^1.8"
+        "zendframework/zend-diactoros": "^1.8",
+        "buzzingpixel/corbomite-events": "^1.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
