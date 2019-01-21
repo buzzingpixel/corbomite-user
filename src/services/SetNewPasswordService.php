@@ -52,7 +52,6 @@ class SetNewPasswordService
 
         $model->passwordHash(password_hash($password, PASSWORD_DEFAULT));
 
-        $saveUser = $this->saveUser;
-        $saveUser($model);
+        $this->saveUser->saveUser($model);
     }
 }

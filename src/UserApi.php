@@ -10,12 +10,13 @@ declare(strict_types=1);
 namespace corbomite\user;
 
 use corbomite\di\Di;
+use corbomite\db\Factory as DbFactory;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUsersService;
 use corbomite\user\interfaces\UserApiInterface;
-use corbomite\user\models\FetchUsersParamsModel;
+use corbomite\db\interfaces\QueryModelInterface;
 use corbomite\user\services\RegisterUserService;
 use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\exceptions\UserExistsException;
@@ -31,16 +32,17 @@ use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\services\ResetPasswordByTokenService;
 use corbomite\user\exceptions\InvalidResetTokenException;
 use corbomite\user\exceptions\InvalidEmailAddressException;
-use corbomite\user\interfaces\FetchUsersParamsModelInterface;
 use corbomite\user\services\GetUserByPasswordResetTokenService;
 
 class UserApi implements UserApiInterface
 {
     private $di;
+    private $dbFactory;
 
-    public function __construct(Di $di)
+    public function __construct(Di $di, DbFactory $dbFactory)
     {
         $this->di = $di;
+        $this->dbFactory = $dbFactory;
     }
 
     /**
@@ -77,19 +79,10 @@ class UserApi implements UserApiInterface
         return $service->fetchUser($identifier);
     }
 
-    public function createFetchUserParamsModel(array $props = []): FetchUsersParamsModelInterface
-    {
-        return new FetchUsersParamsModel($props);
-    }
-
-    /**
-     * @return UserModelInterface[]
-     */
-    public function fetchUsers(FetchUsersParamsModelInterface $paramsModel): array
+    public function makeQueryModel(): QueryModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
-        $service = $this->di->getFromDefinition(FetchUsersService::class);
-        return $service->fetch($paramsModel);
+        return $this->dbFactory->makeQueryModel();
     }
 
     public function fetchCurrentUser(): ?UserModelInterface
@@ -97,6 +90,31 @@ class UserApi implements UserApiInterface
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchCurrentUserService::class);
         return $service();
+    }
+
+    public function fetchOne(?QueryModelInterface $queryModel = null): ?UserModelInterface
+    {
+        if (! $queryModel) {
+            $queryModel = $this->makeQueryModel();
+            $queryModel->addOrder('email_address', 'asc');
+        }
+
+        $queryModel->limit(1);
+
+        return $this->fetchAll($queryModel)[0] ?? null;
+    }
+
+    public function fetchAll(?QueryModelInterface $queryModel = null): array
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(FetchUsersService::class);
+
+        if (! $queryModel) {
+            $queryModel = $this->makeQueryModel();
+            $queryModel->addOrder('email_address', 'asc');
+        }
+
+        return $service->fetch($queryModel);
     }
 
     /**

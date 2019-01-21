@@ -15,15 +15,15 @@ interface UserRecordToModelTransformerInterface
 {
     /**
      * Transforms a user record into a user model
-     * @param UserRecord $record
+     * @param array $record Array of record values from PDO fetch
      * @return UserModelInterface
      */
-    public function __invoke(UserRecord $record): UserModelInterface;
+    public function __invoke(array $record): UserModelInterface;
 
     /**
      * Transforms a user record into a user model
-     * @param UserRecord $record
+     * @param array $record Array of record values from PDO fetch
      * @return UserModelInterface
      */
-    public function transform(UserRecord $record): UserModelInterface;
+    public function transform(array $record): UserModelInterface;
 }

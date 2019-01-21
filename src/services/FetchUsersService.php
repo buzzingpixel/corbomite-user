@@ -9,58 +9,66 @@ declare(strict_types=1);
 
 namespace corbomite\user\services;
 
+use PDO;
 use corbomite\user\data\User\User;
-use corbomite\db\Factory as OrmFactory;
-use corbomite\user\data\User\UserSelect;
+use corbomite\db\interfaces\BuildQueryInterface;
+use corbomite\db\interfaces\QueryModelInterface;
 use corbomite\user\interfaces\UserModelInterface;
-use corbomite\user\interfaces\FetchUsersParamsModelInterface;
 use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
 
 class FetchUsersService
 {
-    private $ormFactory;
+    private $pdo;
+    private $buildQuery;
     private $userRecordToModel;
 
     public function __construct(
-        OrmFactory $ormFactory,
+        PDO $pdo,
+        BuildQueryInterface $buildQuery,
         UserRecordToModelTransformerInterface $userRecordToModel
     ) {
-        $this->ormFactory = $ormFactory;
+        $this->pdo = $pdo;
+        $this->buildQuery = $buildQuery;
         $this->userRecordToModel = $userRecordToModel;
     }
 
     /**
      * @return UserModelInterface[]
      */
-    public function __invoke(FetchUsersParamsModelInterface $paramsModel): array
+    public function __invoke(QueryModelInterface $queryModel): array
     {
-        return $this->fetch($paramsModel);
+        return $this->fetch($queryModel);
     }
 
     /**
      * @return UserModelInterface[]
      */
-    public function fetch(FetchUsersParamsModelInterface $paramsModel): array
+    public function fetch(QueryModelInterface $queryModel): array
     {
+        $query = $this->buildQuery->build(User::class, $queryModel);
+        $query->columns('*');
+
+        $bind = [];
+
+        foreach ($query->getBindValues() as $k => $v) {
+            if (! isset($v[0])) {
+                continue;
+            }
+
+            $bind[':' . $k] = $v[0];
+        }
+
+        $q = $this->pdo->prepare($query->getStatement());
+        $q->execute($bind);
+
+        $result = $q->fetchAll(PDO::FETCH_ASSOC);
+
         $models = [];
 
-        foreach ($this->buildQuery($paramsModel)->fetchRecords() as $record) {
+        foreach ($result as $record) {
             $models[] = $this->userRecordToModel->transform($record);
         }
 
         return $models;
-    }
-
-    private function buildQuery(FetchUsersParamsModelInterface $paramsModel): UserSelect
-    {
-        $query = $this->ormFactory->makeOrm()->select(User::class)
-            ->offset($paramsModel->offset())
-            ->orderBy($paramsModel->orderBy() . ' ' . $paramsModel->sort());
-
-        if ($paramsModel->limit()) {
-            $query->limit($paramsModel->limit());
-        }
-
-        return $query;
     }
 }

@@ -14,11 +14,13 @@ use Zend\Diactoros\Response;
 use Ramsey\Uuid\UuidFactory;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\flashdata\FlashDataApi;
+use corbomite\db\Factory as DbFactory;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\requestdatastore\DataStore;
 use corbomite\user\http\actions\LogInAction;
 use corbomite\user\actions\CreateUserAction;
 use corbomite\user\services\SaveUserService;
+use corbomite\db\services\BuildQueryService;
 use corbomite\user\services\LogUserInService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\FetchUsersService;
@@ -54,23 +56,24 @@ return [
         );
     },
     UserApi::class => function () {
-        return new UserApi(new Di());
+        return new UserApi(new Di(), new DbFactory());
     },
     RegisterUserService::class => function () {
         return new RegisterUserService(Di::get(SaveUserService::class));
     },
     SaveUserService::class => function () {
-        return new SaveUserService(new OrmFactory(), new UuidFactory());
+        return new SaveUserService(Di::get(PDO::class), new UuidFactory());
     },
     FetchUserService::class => function () {
         return new FetchUserService(
-            new OrmFactory(),
-            Di::get(UserRecordToModelTransformer::class)
+            new DbFactory(),
+            Di::get(FetchUsersService::class)
         );
     },
     FetchUsersService::class => function () {
         return new FetchUsersService(
-            new OrmFactory(),
+            Di::get(PDO::class),
+            Di::get(BuildQueryService::class),
             Di::get(UserRecordToModelTransformer::class)
         );
     },

@@ -20,34 +20,34 @@ interface UserModelInterface
     public function __construct(array $props = []);
 
     /**
-     * Returns the value of guid, sets guid if there is an incoming string value
+     * Returns value. Sets value if incoming argument set.
      * @param string|null $guid
      * @return string
      */
-    public function guid(?string $guid = null): string;
+    public function guid(?string $val = null): string;
 
     /**
-     * Returns the value of emailAddress, sets emailAddress if there is an
+     * Returns value. Sets value if incoming argument set.
      * incoming string value
      * @param string|null $guid
      * @return string
      */
-    public function emailAddress(?string $emailAddress = null): string;
+    public function emailAddress(?string $val = null): string;
 
     /**
-     * Returns the value of passwordHash, sets passwordHash if there is an
+     * Returns value. Sets value if incoming argument set.
      * incoming string value
      * @param string|null $guid
      * @return string
      */
-    public function passwordHash(?string $passwordHash = null): string;
+    public function passwordHash(?string $val = null): string;
 
     /**
-     * Returns the value of data, sets data if there is an incoming array value
+     * Returns value. Sets value if incoming argument set.
      * @param array|null $guid
      * @return string
      */
-    public function userData(?array $userData = null): array;
+    public function userData(?array $val = null): array;
 
     /**
      * Returns the value from the specified key in the data array if that key
@@ -59,10 +59,45 @@ interface UserModelInterface
     public function userDataItem(string $key, $val = null);
 
     /**
-     * Returns the value of addedAt, sets the value if there is an incoming
-     * DateTime object
+     * Returns value. Sets value if incoming argument set.
      * @param DateTime|null $addedAt
      * @return DateTime|null
      */
-    public function addedAt(?DateTime $addedAt = null): ?DateTime;
+    public function addedAt(?DateTime $val = null): ?DateTime;
+
+    /**
+     * Returns value. Sets value if incoming argument set.
+     * @param array|null $guid
+     * @return string
+     */
+    public function extendedProperties(?array $val = null): array;
+
+    /**
+     * Sets the value of an extended property
+     * @param string $key
+     * @param mixed $val
+     */
+    public function setExtendedProperty(string $key, $val): void;
+
+    /**
+     * Checks if an extended property exists.
+     * Using getExtendedProperty and checking for null would be unreliable
+     * since the value of an extended property could be null.
+     * @param string $key
+     * @return bool
+     */
+    public function hasExtendedProperty(string $key): bool;
+
+    /**
+     * Gets the value of an extended property
+     * @param string $key
+     * @return mixed|null
+     */
+    public function getExtendedProperty(string $key);
+
+    /**
+     * Removes an extended property
+     * @param string $key
+     */
+    public function removeExtendedProperty(string $key);
 }

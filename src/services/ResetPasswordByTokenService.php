@@ -56,9 +56,7 @@ class ResetPasswordByTokenService
      */
     public function reset(string $token, string $password): void
     {
-        $getUserByPasswordResetToken = $this->getUserByPasswordResetToken;
-
-        if (! $model = $getUserByPasswordResetToken($token)) {
+        if (! $model = $this->getUserByPasswordResetToken->get($token)) {
             throw new InvalidResetTokenException();
         }
 
@@ -68,8 +66,7 @@ class ResetPasswordByTokenService
 
         $model->passwordHash(password_hash($password, PASSWORD_DEFAULT));
 
-        $saveUser = $this->saveUser;
-        $saveUser($model);
+        $this->saveUser->saveUser($model);
 
         $sql = 'DELETE FROM user_password_reset_tokens WHERE guid = ?';
         $q = $this->pdo->prepare($sql);

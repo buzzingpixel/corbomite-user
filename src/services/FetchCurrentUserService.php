@@ -48,7 +48,7 @@ class FetchCurrentUserService
 
         $sessionRecord = $this->ormFactory->makeOrm()
             ->select(UserSession::class)
-            ->where('guid =', $cookie->value())
+            ->where('guid = ', $cookie->value())
             ->fetchRecord();
 
         if (! $sessionRecord) {
@@ -75,7 +75,7 @@ class FetchCurrentUserService
         }
 
         try {
-            return ($this->fetchUser)($sessionRecord->user_guid);
+            return $this->fetchUser->fetchUser($sessionRecord->user_guid);
         } catch (Exception $e) {
             return null;
         }

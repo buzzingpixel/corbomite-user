@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "39566e253aaa2fa5a3bff20be8f0fb35",
+    "content-hash": "05c53837099a168d2b6d931e42f0262a",
     "packages": [
         {
             "name": "atlas/cli",
@@ -4458,7 +4458,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": []
 }

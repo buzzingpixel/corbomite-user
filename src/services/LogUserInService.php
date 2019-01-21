@@ -72,8 +72,7 @@ class LogUserInService
 
         if (password_needs_rehash($user->passwordHash(), PASSWORD_DEFAULT)) {
             $user->passwordHash(password_hash($password, PASSWORD_DEFAULT));
-            $saveUser = $this->saveUser;
-            $saveUser($user);
+            $this->saveUser->saveUser($user);
         }
 
         /** @noinspection PhpUnhandledExceptionInspection */

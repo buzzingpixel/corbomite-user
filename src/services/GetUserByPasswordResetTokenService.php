@@ -40,9 +40,7 @@ class GetUserByPasswordResetTokenService
             return null;
         }
 
-        $fetchUser = $this->fetchUser;
-
-        return $fetchUser($record->user_guid);
+        return $this->fetchUser->fetchUser($record->user_guid);
     }
 
     private function fetchRecord(string $token): ?UserPasswordResetTokenRecord

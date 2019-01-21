@@ -29,7 +29,7 @@ class SessionGarbageCollectionService
         $dateTime->setTimestamp(strtotime('30 days ago'));
         $dateTime->setTimezone(new DateTimeZone('UTC'));
 
-        $sql = 'DELETE FROM user_sessions WHERE last_touched_at < ?';
+        $sql = 'DELETE FROM `user_sessions` WHERE last_touched_at < ?';
         $q = $this->pdo->prepare($sql);
         $q->execute([$dateTime->format('Y-m-d H:i:s')]);
     }

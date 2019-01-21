@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace corbomite\user\interfaces;
 
+use corbomite\db\interfaces\QueryModelInterface;
+
 interface UserApiInterface
 {
     /**
@@ -34,21 +36,30 @@ interface UserApiInterface
     /**
      * Creates a Fetch User Params Model
      * @param array $props
-     * @return FetchUsersParamsModelInterface
+     * @return QueryModelInterface
      */
-    public function createFetchUserParamsModel(array $props = []): FetchUsersParamsModelInterface;
-
-    /**
-     * @param FetchUsersParamsModelInterface $paramsModel
-     * @return UserModelInterface[]
-     */
-    public function fetchUsers(FetchUsersParamsModelInterface $paramsModel): array;
+    public function makeQueryModel(): QueryModelInterface;
 
     /**
      * Fetches the currently logged in user
      * @return UserModelInterface|null
      */
     public function fetchCurrentUser(): ?UserModelInterface;
+
+    /**
+     * Fetches one matching user based on params model settings
+     * @param QueryModelInterface $paramsModel
+     * @return UserModelInterface|null
+     */
+    public function fetchOne(?QueryModelInterface $queryModel = null): ?UserModelInterface;
+
+    /**
+     * Fetches all matching users based on params model settings
+     *
+     * @param QueryModelInterface $queryModel
+     * @return UserModelInterface[]
+     */
+    public function fetchAll(?QueryModelInterface $queryModel = null): array;
 
     /**
      * Validates a password against the specified user identifier

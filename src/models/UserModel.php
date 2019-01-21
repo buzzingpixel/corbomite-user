@@ -94,4 +94,35 @@ class UserModel implements UserModelInterface
     {
         return $this->addedAt = $addedAt ?? $this->addedAt;
     }
+
+    private $extendedProperties = [];
+
+    public function extendedProperties(?array $val = null): array
+    {
+        return $this->extendedProperties = $val ?? $this->extendedProperties;
+    }
+
+    public function setExtendedProperty(string $key, $val): void
+    {
+        $this->extendedProperties[$key] = $val;
+    }
+
+    public function hasExtendedProperty(string $key): bool
+    {
+        return array_key_exists($key, $this->extendedProperties);
+    }
+
+    public function getExtendedProperty(string $key)
+    {
+        return $this->extendedProperties[$key] ?? null;
+    }
+
+    public function removeExtendedProperty(string $key): void
+    {
+        if (! $this->hasExtendedProperty($key)) {
+            return;
+        }
+
+        unset($this->extendedProperties[$key]);
+    }
 }
