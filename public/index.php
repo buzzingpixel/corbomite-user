@@ -56,6 +56,14 @@ $userApi = Di::get(UserApi::class);
 // var_dump($user);
 // die;
 
-$user = $userApi->fetchCurrentUser();
-$user->setExtendedProperty('test', 'testing 123');
-$userApi->saveUser($user);
+// $user = $userApi->fetchCurrentUser();
+// $user->setExtendedProperty('test', 'testing 123');
+// $userApi->saveUser($user);
+
+// $userApi->registerUser('asdf@buzzingpixel.com', '1234qwertY');
+// die;
+// $userApi->deleteUser($userApi->fetchUser('asdf@buzzingpixel.com'));
+// die;
+// $user = $userApi->fetchUser('asdf@buzzingpixel.com');
+// var_dump($user);
+// die;

@@ -14,6 +14,7 @@ use corbomite\db\Factory as DbFactory;
 use corbomite\user\services\SaveUserService;
 use corbomite\user\services\FetchUserService;
 use corbomite\user\services\LogUserInService;
+use corbomite\user\services\DeleteUserService;
 use corbomite\user\services\FetchUsersService;
 use corbomite\user\interfaces\UserApiInterface;
 use corbomite\db\interfaces\QueryModelInterface;
@@ -193,5 +194,12 @@ class UserApi implements UserApiInterface
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SetNewPasswordService::class);
         $service->set($user, $password);
+    }
+
+    public function deleteUser(UserModelInterface $user): void
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $service = $this->di->getFromDefinition(DeleteUserService::class);
+        $service->delete($user);
     }
 }

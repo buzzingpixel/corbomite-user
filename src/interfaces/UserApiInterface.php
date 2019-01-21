@@ -111,4 +111,10 @@ interface UserApiInterface
      * @param string $password
      */
     public function setNewPassword(UserModelInterface $user, string $password);
+
+    /**
+     * Deletes a user
+     * @param UserModelInterface $user
+     */
+    public function deleteUser(UserModelInterface $user);
 }
