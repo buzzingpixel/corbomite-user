@@ -10,14 +10,14 @@ declare(strict_types=1);
 namespace corbomite\user\services;
 
 use corbomite\user\models\UserModel;
+use corbomite\user\events\UserAfterRegisterEvent;
+use corbomite\user\events\UserBeforeRegisterEvent;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\InvalidUserModelException;
 use corbomite\user\exceptions\UserDoesNotExistException;
 use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
-use src\app\projects\events\UserAfterRegisterEvent;
-use src\app\projects\events\UserBeforeRegisterEvent;
 
 class RegisterUserService
 {

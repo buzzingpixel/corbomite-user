@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace src\app\projects\events;
+namespace corbomite\user\events;
 
 use corbomite\user\UserApi;
 use corbomite\events\interfaces\EventInterface;

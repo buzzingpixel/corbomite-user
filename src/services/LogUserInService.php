@@ -11,8 +11,8 @@ namespace corbomite\user\services;
 
 use DateTime;
 use buzzingpixel\cookieapi\CookieApi;
-use src\app\projects\events\UserAfterLogInEvent;
-use src\app\projects\events\UserBeforeLogInEvent;
+use corbomite\user\events\UserAfterLogInEvent;
+use corbomite\user\events\UserBeforeLogInEvent;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\InvalidPasswordException;
 use corbomite\user\exceptions\UserDoesNotExistException;

@@ -11,9 +11,9 @@ namespace corbomite\user\services;
 
 use PDO;
 use LogicException;
+use corbomite\user\events\UserAfterDeleteEvent;
+use corbomite\user\events\UserBeforeDeleteEvent;
 use corbomite\user\interfaces\UserModelInterface;
-use src\app\projects\events\UserAfterDeleteEvent;
-use src\app\projects\events\UserBeforeDeleteEvent;
 use corbomite\events\interfaces\EventDispatcherInterface;
 
 class DeleteUserService
