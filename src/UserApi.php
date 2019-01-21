@@ -54,7 +54,7 @@ class UserApi implements UserApiInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(RegisterUserService::class);
-        $service($emailAddress, $password);
+        $service->registerUser($emailAddress, $password);
     }
 
     /**
@@ -67,14 +67,14 @@ class UserApi implements UserApiInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SaveUserService::class);
-        $service($user);
+        $service->saveUser($user);
     }
 
     public function fetchUser(string $identifier): ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUserService::class);
-        return $service($identifier);
+        return $service->fetchUser($identifier);
     }
 
     public function createFetchUserParamsModel(array $props = []): FetchUsersParamsModelInterface
@@ -89,7 +89,7 @@ class UserApi implements UserApiInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUsersService::class);
-        return $service($paramsModel);
+        return $service->fetch($paramsModel);
     }
 
     public function fetchCurrentUser(): ?UserModelInterface
@@ -110,7 +110,7 @@ class UserApi implements UserApiInterface
         $service = $this->di->getFromDefinition(
             ValidateUserPasswordService::class
         );
-        return $service($identifier, $password);
+        return $service->validateUserPassword($identifier, $password);
     }
 
     /**
@@ -124,28 +124,28 @@ class UserApi implements UserApiInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(LogUserInService::class);
-        $service($emailAddress, $password);
+        $service->logUserIn($emailAddress, $password);
     }
 
     public function logCurrentUserOut(): void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(LogCurrentUserOutService::class);
-        $service();
+        $service->logCurrentUserOut();
     }
 
     public function generatePasswordResetToken(UserModelInterface $user): string
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GeneratePasswordResetToken::class);
-        return $service($user);
+        return $service->generate($user);
     }
 
     public function getUserByPasswordResetToken(string $token): ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GetUserByPasswordResetTokenService::class);
-        return $service($token);
+        return $service->get($token);
     }
 
     /**
@@ -160,7 +160,7 @@ class UserApi implements UserApiInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(ResetPasswordByTokenService::class);
-        $service($token, $password);
+        $service->reset($token, $password);
     }
 
     /**
@@ -174,6 +174,6 @@ class UserApi implements UserApiInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SetNewPasswordService::class);
-        $service($user, $password);
+        $service->set($user, $password);
     }
 }

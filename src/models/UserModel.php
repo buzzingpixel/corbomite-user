@@ -10,12 +10,16 @@ declare(strict_types=1);
 namespace corbomite\user\models;
 
 use DateTime;
+use DateTimeZone;
 use corbomite\user\interfaces\UserModelInterface;
 
 class UserModel implements UserModelInterface
 {
     public function __construct(array $props = [])
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->addedAt = new DateTime('now', new DateTimeZone('UTC'));
+
         foreach ($props as $key => $val) {
             $this->{$key}($val);
         }
@@ -25,32 +29,28 @@ class UserModel implements UserModelInterface
 
     public function guid(?string $guid = null): string
     {
-        return $this->guid = $guid !== null ? $guid : $this->guid;
+        return $this->guid = $guid ?? $this->guid;
     }
 
     private $emailAddress = '';
 
     public function emailAddress(?string $emailAddress = null): string
     {
-        return $this->emailAddress = $emailAddress !== null ?
-            $emailAddress :
-            $this->emailAddress;
+        return $this->emailAddress = $emailAddress ?? $this->emailAddress;
     }
 
     private $passwordHash = '';
 
     public function passwordHash(?string $passwordHash = null): string
     {
-        return $this->passwordHash = $passwordHash !== null ?
-            $passwordHash :
-            $this->passwordHash;
+        return $this->passwordHash = $passwordHash ?? $this->passwordHash;
     }
 
     private $userData = [];
 
     public function userData(?array $userData = null): array
     {
-        return $this->userData = $userData !== null ? $userData : $this->userData;
+        return $this->userData = $userData ?? $this->userData;
     }
 
     public function userDataItem(string $key, $val = null)
@@ -62,7 +62,7 @@ class UserModel implements UserModelInterface
         return $this->getUserDataItem($key);
     }
 
-    private function setUserDataItem(string $key, $val)
+    private function setUserDataItem(string $key, $val): void
     {
         $loc = &$this->userData;
 
@@ -92,6 +92,6 @@ class UserModel implements UserModelInterface
 
     public function addedAt(?DateTime $addedAt = null): ?DateTime
     {
-        return $this->addedAt = $addedAt !== null ? $addedAt : $this->addedAt;
+        return $this->addedAt = $addedAt ?? $this->addedAt;
     }
 }

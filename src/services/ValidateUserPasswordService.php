@@ -35,9 +35,7 @@ class ValidateUserPasswordService
         string $identifier,
         string $password
     ): bool {
-        $fetchUser = $this->fetchUser;
-
-        if (! $user = $fetchUser($identifier)) {
+        if (! $user = $this->fetchUser->fetchUser($identifier)) {
             throw new UserDoesNotExistException();
         }
 

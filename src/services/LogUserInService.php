@@ -60,7 +60,7 @@ class LogUserInService
      */
     public function logUserIn(string $emailAddress, string $password): void
     {
-        if (! ($this->validateUserPassword)($emailAddress, $password)) {
+        if (! $this->validateUserPassword->validateUserPassword($emailAddress, $password)) {
             throw new InvalidPasswordException();
         }
 

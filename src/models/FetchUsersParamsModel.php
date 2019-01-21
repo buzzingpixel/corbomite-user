@@ -24,21 +24,21 @@ class FetchUsersParamsModel implements FetchUsersParamsModelInterface
 
     public function limit(?int $limit = null): int
     {
-        return $this->limit = $limit !== null ? $limit : $this->limit;
+        return $this->limit = $limit ?? $this->limit;
     }
 
     private $offset = 0;
 
     public function offset(?int $offset = null): int
     {
-        return $this->offset = $offset !== null ? $offset : $this->offset;
+        return $this->offset = $offset ?? $this->offset;
     }
 
     private $orderBy = 'added_at';
 
     public function orderBy(?string $orderBy = null): string
     {
-        return $this->orderBy = $orderBy !== null ? $orderBy : $this->orderBy;
+        return $this->orderBy = $orderBy ?? $this->orderBy;
     }
 
     private $sort = 'desc';

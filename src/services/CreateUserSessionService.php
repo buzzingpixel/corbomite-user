@@ -45,8 +45,7 @@ class CreateUserSessionService
      */
     public function createUserSession(string $userGuid): string
     {
-        $fetchUser = $this->fetchUser;
-        if (! $fetchUser($userGuid)) {
+        if (! $this->fetchUser->fetchUser($userGuid)) {
             throw new UserDoesNotExistException();
         }
 
