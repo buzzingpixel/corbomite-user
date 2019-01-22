@@ -55,7 +55,6 @@ interface UserApiInterface
 
     /**
      * Fetches all matching users based on params model settings
-     *
      * @param QueryModelInterface $queryModel
      * @return UserModelInterface[]
      */

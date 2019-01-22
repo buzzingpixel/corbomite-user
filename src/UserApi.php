@@ -82,7 +82,6 @@ class UserApi implements UserApiInterface
 
     public function makeQueryModel(): QueryModelInterface
     {
-        /** @noinspection PhpUnhandledExceptionInspection */
         return $this->dbFactory->makeQueryModel();
     }
 

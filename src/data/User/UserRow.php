@@ -9,7 +9,6 @@ namespace corbomite\user\data\User;
 use Atlas\Table\Row;
 
 /**
- * @property mixed $id int(10,0) NOT NULL
  * @property mixed $guid varchar(255) NOT NULL
  * @property mixed $email_address text(65535) NOT NULL
  * @property mixed $password_hash varchar(255) NOT NULL
@@ -20,7 +19,6 @@ use Atlas\Table\Row;
 class UserRow extends Row
 {
     protected $cols = [
-        'id' => null,
         'guid' => null,
         'email_address' => null,
         'password_hash' => null,
