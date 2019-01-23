@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace corbomite\user\interfaces;
 
 use DateTime;
+use corbomite\db\interfaces\UuidModelInterface;
 
 interface UserModelInterface
 {
@@ -25,6 +26,24 @@ interface UserModelInterface
      * @return string
      */
     public function guid(?string $val = null): string;
+
+    /**
+     * Gets the UuidModel for the guid
+     * @return UuidModelInterface
+     */
+    public function guidAsModel(): UuidModelInterface;
+
+    /**
+     * Gets the GUID as bytes for saving to the database in binary
+     * @return string
+     */
+    public function getGuidAsBytes(): string;
+
+    /**
+     * Sets the GUID from bytes coming from the database binary column
+     * @param string $bytes
+     */
+    public function setGuidAsBytes(string $bytes);
 
     /**
      * Returns value. Sets value if incoming argument set.

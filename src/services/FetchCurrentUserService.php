@@ -12,6 +12,7 @@ namespace corbomite\user\services;
 use DateTime;
 use Exception;
 use DateTimeZone;
+use Ramsey\Uuid\UuidFactoryInterface;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
@@ -22,15 +23,18 @@ class FetchCurrentUserService
     private $ormFactory;
     private $cookieApi;
     private $fetchUser;
+    private $uuidFactory;
 
     public function __construct(
         OrmFactory $atlas,
         CookieApi $cookieApi,
-        FetchUserService $fetchUser
+        FetchUserService $fetchUser,
+        UuidFactoryInterface $uuidFactory
     ) {
         $this->ormFactory = $atlas;
         $this->cookieApi = $cookieApi;
         $this->fetchUser = $fetchUser;
+        $this->uuidFactory = $uuidFactory;
     }
 
     public function __invoke(): ?UserModelInterface
@@ -48,7 +52,10 @@ class FetchCurrentUserService
 
         $sessionRecord = $this->ormFactory->makeOrm()
             ->select(UserSession::class)
-            ->where('guid = ', $cookie->value())
+            ->where(
+                'guid = ',
+                $this->uuidFactory->fromString($cookie->value())->getBytes()
+            )
             ->fetchRecord();
 
         if (! $sessionRecord) {
@@ -61,6 +68,10 @@ class FetchCurrentUserService
             new DateTimeZone($sessionRecord->last_touched_at_time_zone)
         );
 
+        /**
+         * We don't want to touch the session (write to the database) every time
+         * we fetch the current user. So we'll only do it once every 24 hours
+         */
         $h24 = 86400;
         $diff = time() - $lastTouchedAt->getTimestamp();
 

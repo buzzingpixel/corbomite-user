@@ -22,27 +22,27 @@ use corbomite\user\exceptions\InvalidEmailAddressException;
 
 class LogUserInService
 {
-    private $validateUserPassword;
-    private $fetchUser;
     private $saveUser;
-    private $createUserSession;
     private $cookieApi;
+    private $fetchUser;
     private $dispatcher;
+    private $createUserSession;
+    private $validateUserPassword;
 
     public function __construct(
-        ValidateUserPasswordService $validateUserPassword,
-        FetchUserService $fetchUser,
-        SaveUserService $saveUser,
-        CreateUserSessionService $createUserSession,
         CookieApi $cookieApi,
-        EventDispatcherInterface $dispatcher
+        SaveUserService $saveUser,
+        FetchUserService $fetchUser,
+        EventDispatcherInterface $dispatcher,
+        CreateUserSessionService $createUserSession,
+        ValidateUserPasswordService $validateUserPassword
     ) {
-        $this->validateUserPassword = $validateUserPassword;
-        $this->fetchUser = $fetchUser;
         $this->saveUser = $saveUser;
-        $this->createUserSession = $createUserSession;
         $this->cookieApi = $cookieApi;
+        $this->fetchUser = $fetchUser;
         $this->dispatcher = $dispatcher;
+        $this->createUserSession = $createUserSession;
+        $this->validateUserPassword = $validateUserPassword;
     }
 
     /**
@@ -89,8 +89,7 @@ class LogUserInService
         $dateTime = new DateTime();
         $dateTime->setTimestamp(strtotime('+ 20 years'));
 
-        $createUserSession = $this->createUserSession;
-        $sessionId = $createUserSession($user->guid());
+        $sessionId = $this->createUserSession->createUserSession($user->guid());
 
         $cookie = $this->cookieApi->makeCookie(
             'user_session_token',

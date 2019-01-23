@@ -11,10 +11,13 @@ namespace corbomite\user\models;
 
 use DateTime;
 use DateTimeZone;
+use corbomite\db\traits\UuidTrait;
 use corbomite\user\interfaces\UserModelInterface;
 
 class UserModel implements UserModelInterface
 {
+    use UuidTrait;
+
     public function __construct(array $props = [])
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -23,13 +26,6 @@ class UserModel implements UserModelInterface
         foreach ($props as $key => $val) {
             $this->{$key}($val);
         }
-    }
-
-    private $guid = '';
-
-    public function guid(?string $guid = null): string
-    {
-        return $this->guid = $guid ?? $this->guid;
     }
 
     private $emailAddress = '';

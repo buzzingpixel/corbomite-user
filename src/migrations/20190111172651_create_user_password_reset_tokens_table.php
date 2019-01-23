@@ -23,7 +23,7 @@ class CreateUserPasswordResetTokensTable extends AbstractMigration
                 'limit' => 16,
                 'comment' => 'UUID generated in code and stored as binary',
             ])
-            ->addColumn('user_guid', 'text', [
+            ->addColumn('user_guid', 'binary', [
                 'limit' => 16,
                 'comment' => 'Associated user UUID stored as binary',
             ])

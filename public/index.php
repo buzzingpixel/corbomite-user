@@ -41,14 +41,18 @@ $userApi = Di::get(UserApi::class);
 // die;
 
 // $queryModel = $userApi->makeQueryModel();
-// $queryModel->addWhere('email_address', 'asdf');
-// var_dump($userApi->fetchOne($queryModel));
+// $queryModel->addWhere('email_address', 'tj@buzzingpixel.com');
+// var_dump($userApi->fetchOne($queryModel)->guid());
 // die;
 
-// var_dump($userApi->logUserIn('c760d1db-d905-4914-930b-c07da0a5f1b0', '1234qwertY'));
+// var_dump($userApi->logUserIn('8615d150-1ebb-11e9-9f14-0242c0a8f004', '1234qwertY'));
+// die;
+
+// var_dump($userApi->fetchCurrentUser());
 // die;
 
 // $userApi->registerUser('test@buzzingpixel.com', 'qwertyuiop1234567890');
+// die;
 
 // $user = $userApi->fetchUser('test@buzzingpixel.com');
 // $user->setExtendedProperty('test', 'things');
@@ -66,4 +70,30 @@ $userApi = Di::get(UserApi::class);
 // die;
 // $user = $userApi->fetchUser('asdf@buzzingpixel.com');
 // var_dump($user);
+// die;
+
+// $userApi->logCurrentUserOut();
+// die;
+
+// var_dump($userApi->validateUserPassword('jkirk@starfleet.galaxy', '1234qwertY'));
+// die;
+
+// var_dump($userApi->generatePasswordResetToken($userApi->fetchUser('jkirk@starfleet.galaxy')));
+// die;
+
+// var_dump($userApi->getUserByPasswordResetToken('c044ee0a-64d1-49cf-9bf0-15881ce4b59a'));
+// die;
+
+// $userApi->resetPasswordByToken('c044ee0a-64d1-49cf-9bf0-15881ce4b59a', 'poiuytrewQ0987');
+// die;
+
+// var_dump($userApi->validateUserPassword('jkirk@starfleet.galaxy', '1234qwertY'));
+// var_dump($userApi->validateUserPassword('jkirk@starfleet.galaxy', 'poiuytrewQ0987'));
+// die;
+
+// $userApi->setNewPassword($userApi->fetchUser('tj@buzzingpixel.com'), 'lKjHgFdS9*76');
+// die;
+
+// var_dump($userApi->validateUserPassword('tj@buzzingpixel.com', '1234qwertY'));
+// var_dump($userApi->validateUserPassword('tj@buzzingpixel.com', 'lKjHgFdS9*76'));
 // die;

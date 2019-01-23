@@ -9,19 +9,25 @@ declare(strict_types=1);
 
 namespace corbomite\user\services;
 
+use Ramsey\Uuid\UuidFactoryInterface;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
 
 class LogCurrentUserOutService
 {
-    private $ormFactory;
     private $cookieApi;
+    private $ormFactory;
+    private $uuidFactory;
 
-    public function __construct(OrmFactory $ormFactory, CookieApi $cookieApi)
-    {
-        $this->ormFactory = $ormFactory;
+    public function __construct(
+        OrmFactory $ormFactory,
+        CookieApi $cookieApi,
+        UuidFactoryInterface $uuidFactory
+    ) {
         $this->cookieApi = $cookieApi;
+        $this->ormFactory = $ormFactory;
+        $this->uuidFactory = $uuidFactory;
     }
 
     public function __invoke(): void
@@ -40,7 +46,10 @@ class LogCurrentUserOutService
         $orm = $this->ormFactory->makeOrm();
 
         $record = $orm->select(UserSession::class)
-            ->where('guid =', $cookie->value())
+            ->where(
+                'guid = ',
+                $this->uuidFactory->fromString($cookie->value())->getBytes()
+            )
             ->fetchRecord();
 
         if ($record) {

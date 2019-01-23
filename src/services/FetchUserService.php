@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace corbomite\user\services;
 
+use Ramsey\Uuid\UuidFactoryInterface;
 use corbomite\db\Factory as DbFactory;
 use corbomite\user\interfaces\UserModelInterface;
 
@@ -16,13 +17,16 @@ class FetchUserService
 {
     private $dbFactory;
     private $fetchUsers;
+    private $uuidFactory;
 
     public function __construct(
         DbFactory $dbFactory,
-        FetchUsersService $fetchUsers
+        FetchUsersService $fetchUsers,
+        UuidFactoryInterface $uuidFactory
     ) {
         $this->dbFactory = $dbFactory;
         $this->fetchUsers = $fetchUsers;
+        $this->uuidFactory = $uuidFactory;
     }
 
     public function __invoke(string $identifier): ?UserModelInterface
@@ -33,13 +37,34 @@ class FetchUserService
     public function fetchUser(string $identifier): ?UserModelInterface
     {
         $queryModel = $this->dbFactory->makeQueryModel();
-
         $queryModel->limit(1);
 
-        $queryModel->addWhere('guid', $identifier);
+        $isBinary = $this->isBinary($identifier);
 
-        $queryModel->addWhere('email_address', $identifier, '=', true);
+        if ($isBinary) {
+            $queryModel->addWhere('guid', $identifier);
+        }
+
+        if (! $isBinary) {
+            $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL);
+
+            if ($isEmail) {
+                $queryModel->addWhere('email_address', $identifier);
+            }
+
+            if (! $isEmail) {
+                $queryModel->addWhere(
+                    'guid',
+                    $this->uuidFactory->fromString($identifier)->getBytes()
+                );
+            }
+        }
 
         return $this->fetchUsers->fetch($queryModel)[0] ?? null;
+    }
+
+    private function isBinary($str): bool
+    {
+        return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
     }
 }

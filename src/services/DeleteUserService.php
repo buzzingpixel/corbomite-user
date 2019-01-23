@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace corbomite\user\services;
 
 use PDO;
-use LogicException;
 use corbomite\user\events\UserAfterDeleteEvent;
 use corbomite\user\events\UserBeforeDeleteEvent;
 use corbomite\user\interfaces\UserModelInterface;
@@ -36,27 +35,23 @@ class DeleteUserService
 
     public function delete(UserModelInterface $user): void
     {
-        if (! $user->guid()) {
-            throw new LogicException('User Model GUID is not set');
-        }
-
         $before = new UserBeforeDeleteEvent($user);
 
         $this->dispatcher->dispatch($before->name(), $before->provider(), $before);
 
         $statement = $this->pdo->prepare('DELETE FROM `users` WHERE guid=:guid');
         $statement->execute([
-            ':guid' => $user->guid(),
+            ':guid' => $user->getGuidAsBytes(),
         ]);
 
         $statement = $this->pdo->prepare('DELETE FROM `user_sessions` WHERE user_guid=:user_guid');
         $statement->execute([
-            ':user_guid' => $user->guid(),
+            ':user_guid' => $user->getGuidAsBytes(),
         ]);
 
         $statement = $this->pdo->prepare('DELETE FROM `user_password_reset_tokens` WHERE user_guid=:user_guid');
         $statement->execute([
-            ':user_guid' => $user->guid(),
+            ':user_guid' => $user->getGuidAsBytes(),
         ]);
 
         $after = new UserAfterDeleteEvent($user);

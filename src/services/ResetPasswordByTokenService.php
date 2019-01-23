@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace corbomite\user\services;
 
 use corbomite\db\PDO;
+use Ramsey\Uuid\UuidFactoryInterface;
 use corbomite\user\exceptions\UserExistsException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\InvalidUserModelException;
@@ -19,18 +20,21 @@ use corbomite\user\exceptions\InvalidEmailAddressException;
 
 class ResetPasswordByTokenService
 {
-    private $getUserByPasswordResetToken;
-    private $saveUser;
     private $pdo;
+    private $saveUser;
+    private $uuidFactory;
+    private $getUserByPasswordResetToken;
 
     public function __construct(
-        GetUserByPasswordResetTokenService $getUserByPasswordResetToken,
+        PDO $pdo,
         SaveUserService $saveUser,
-        PDO $pdo
+        UuidFactoryInterface $uuidFactory,
+        GetUserByPasswordResetTokenService $getUserByPasswordResetToken
     ) {
-        $this->getUserByPasswordResetToken = $getUserByPasswordResetToken;
-        $this->saveUser = $saveUser;
         $this->pdo = $pdo;
+        $this->saveUser = $saveUser;
+        $this->uuidFactory = $uuidFactory;
+        $this->getUserByPasswordResetToken = $getUserByPasswordResetToken;
     }
 
     /**
@@ -56,6 +60,10 @@ class ResetPasswordByTokenService
      */
     public function reset(string $token, string $password): void
     {
+        if (! $this->isBinary($token)) {
+            $token = $this->uuidFactory->fromString($token)->getBytes();
+        }
+
         if (! $model = $this->getUserByPasswordResetToken->get($token)) {
             throw new InvalidResetTokenException();
         }
@@ -71,5 +79,10 @@ class ResetPasswordByTokenService
         $sql = 'DELETE FROM user_password_reset_tokens WHERE guid = ?';
         $q = $this->pdo->prepare($sql);
         $q->execute([$token]);
+    }
+
+    private function isBinary($str): bool
+    {
+        return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
     }
 }

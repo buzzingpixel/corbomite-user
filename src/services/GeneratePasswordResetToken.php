@@ -18,15 +18,15 @@ use corbomite\user\data\UserPasswordResetToken\UserPasswordResetToken;
 
 class GeneratePasswordResetToken
 {
-    private $uuidFactory;
     private $ormFactory;
+    private $uuidFactory;
 
     public function __construct(
-        UuidFactory $uuidFactory,
-        OrmFactory $ormFactory
+        OrmFactory $ormFactory,
+        UuidFactory $uuidFactory
     ) {
-        $this->uuidFactory = $uuidFactory;
         $this->ormFactory = $ormFactory;
+        $this->uuidFactory = $uuidFactory;
     }
 
     public function __invoke(UserModelInterface $userModel): string
@@ -43,18 +43,19 @@ class GeneratePasswordResetToken
         $orm = $this->ormFactory->makeOrm();
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $token = $this->uuidFactory->uuid4()->toString();
+        $token = $this->uuidFactory->uuid4();
 
         $record = $orm->newRecord(UserPasswordResetToken::class);
+
         /** @noinspection PhpUnhandledExceptionInspection */
-        $record->guid = $token;
-        $record->user_guid = $userModel->guid();
+        $record->guid = $token->getBytes();
+        $record->user_guid = $userModel->getGuidAsBytes();
 
         $record->added_at = $dateTime->format('Y-m-d H:i:s');
         $record->added_at_time_zone = $dateTime->getTimezone()->getName();
 
         $orm->persist($record);
 
-        return $token;
+        return $token->toString();
     }
 }

@@ -11,25 +11,25 @@ namespace corbomite\user\services;
 
 use DateTime;
 use DateTimeZone;
-use Ramsey\Uuid\UuidFactory;
+use Ramsey\Uuid\UuidFactoryInterface;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
 use corbomite\user\exceptions\UserDoesNotExistException;
 
 class CreateUserSessionService
 {
-    private $uuidFactory;
-    private $ormFactory;
     private $fetchUser;
+    private $ormFactory;
+    private $uuidFactory;
 
     public function __construct(
-        UuidFactory $uuidFactory,
         OrmFactory $atlas,
-        FetchUserService $fetchUser
+        FetchUserService $fetchUser,
+        UuidFactoryInterface $uuidFactory
     ) {
-        $this->uuidFactory = $uuidFactory;
         $this->ormFactory = $atlas;
         $this->fetchUser = $fetchUser;
+        $this->uuidFactory = $uuidFactory;
     }
 
     /**
@@ -55,9 +55,15 @@ class CreateUserSessionService
 
         $ormFactory = $this->ormFactory->makeOrm();
 
-        $record = $ormFactory->newRecord(UserSession::class);
+        if (! $this->isBinary($userGuid)) {
+            $userGuid = $this->uuidFactory->fromString($userGuid)->getBytes();
+        }
+
         /** @noinspection PhpUnhandledExceptionInspection */
-        $record->guid = $this->uuidFactory->uuid4()->toString();
+        $sessionGuid = $this->uuidFactory->uuid1();
+
+        $record = $ormFactory->newRecord(UserSession::class);
+        $record->guid = $sessionGuid->getBytes();
         $record->user_guid = $userGuid;
         $record->added_at = $dateTime->format('Y-m-d H:i:s');
         $record->added_at_time_zone = $dateTime->getTimezone()->getName();
@@ -66,6 +72,11 @@ class CreateUserSessionService
 
         $ormFactory->persist($record);
 
-        return $record->guid;
+        return $sessionGuid->toString();
+    }
+
+    private function isBinary($str): bool
+    {
+        return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
     }
 }

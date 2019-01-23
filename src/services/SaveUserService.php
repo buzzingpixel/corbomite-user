@@ -67,7 +67,7 @@ class SaveUserService
             throw new InvalidEmailAddressException();
         }
 
-        if (! $model->guid()) {
+        if (! $this->checkIfGuidExists($model->getGuidAsBytes())) {
             $before = new UserBeforeSaveEvent($model, true);
 
             $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
@@ -109,7 +109,7 @@ class SaveUserService
         $values = ':guid, :email_address, :password_hash, :user_data, :added_at, :added_at_time_zone';
 
         /** @noinspection PhpUnhandledExceptionInspection */
-        $guid = $this->uuidFactory->uuid4()->toString();
+        $guid = $this->uuidFactory->uuid1();
 
         $bind = [
             ':guid' => '',
@@ -127,7 +127,7 @@ class SaveUserService
         }
 
         $bind = array_merge($bind, [
-            ':guid' => $guid,
+            ':guid' => $guid->getBytes(),
             ':email_address' => $model->emailAddress(),
             ':password_hash' => $model->passwordHash(),
             ':user_data' => json_encode($model->userData()),
@@ -147,20 +147,18 @@ class SaveUserService
      */
     private function saveExistingUser(UserModelInterface $model): void
     {
-        if (! $this->checkIfGuidExists($model->guid())) {
+        if (! $this->checkIfGuidExists($model->getGuidAsBytes())) {
             throw new UserDoesNotExistException();
         }
 
         $bind = [
-            ':guid' => '',
             ':email_address' => '',
             ':password_hash' => '',
             ':user_data' => '',
         ];
 
         $sql = 'UPDATE `users` SET';
-        $sql .= ' guid=:guid';
-        $sql .= ', email_address=:email_address';
+        $sql .= ' email_address=:email_address';
         $sql .= ', password_hash=:password_hash';
         $sql .= ', user_data=:user_data';
 
@@ -172,11 +170,10 @@ class SaveUserService
         $sql .= ' WHERE guid=:guid_where';
 
         $bind = array_merge($bind, [
-            ':guid' => $model->guid(),
             ':email_address' => $model->emailAddress(),
             ':password_hash' => $model->passwordHash(),
             ':user_data' => json_encode($model->userData()),
-            ':guid_where' => $model->guid(),
+            ':guid_where' => $model->getGuidAsBytes(),
         ]);
 
         $statement = $this->pdo->prepare($sql);

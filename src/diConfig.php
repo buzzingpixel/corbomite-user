@@ -69,14 +69,15 @@ return [
     SaveUserService::class => function () {
         return new SaveUserService(
             Di::get(PDO::class),
-            new UuidFactory(),
+            Di::get('UuidFactoryWithOrderedTimeCodec'),
             Di::get(EventDispatcher::class)
         );
     },
     FetchUserService::class => function () {
         return new FetchUserService(
             new DbFactory(),
-            Di::get(FetchUsersService::class)
+            Di::get(FetchUsersService::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
     FetchUsersService::class => function () {
@@ -90,7 +91,8 @@ return [
         return new FetchCurrentUserService(
             new OrmFactory(),
             Di::get(CookieApi::class),
-            Di::get(FetchUserService::class)
+            Di::get(FetchUserService::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
     ValidateUserPasswordService::class => function () {
@@ -100,25 +102,26 @@ return [
     },
     CreateUserSessionService::class => function () {
         return new CreateUserSessionService(
-            new UuidFactory(),
             new OrmFactory(),
-            Di::get(FetchUserService::class)
+            Di::get(FetchUserService::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
     LogUserInService::class => function () {
         return new LogUserInService(
-            Di::get(ValidateUserPasswordService::class),
-            Di::get(FetchUserService::class),
-            Di::get(SaveUserService::class),
-            Di::get(CreateUserSessionService::class),
             Di::get(CookieApi::class),
-            Di::get(EventDispatcher::class)
+            Di::get(SaveUserService::class),
+            Di::get(FetchUserService::class),
+            Di::get(EventDispatcher::class),
+            Di::get(CreateUserSessionService::class),
+            Di::get(ValidateUserPasswordService::class)
         );
     },
     LogCurrentUserOutService::class => function () {
         return new LogCurrentUserOutService(
             new OrmFactory(),
-            Di::get(CookieApi::class)
+            Di::get(CookieApi::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
     SessionGarbageCollectionService::class => function () {
@@ -126,8 +129,8 @@ return [
     },
     GeneratePasswordResetToken::class => function () {
         return new GeneratePasswordResetToken(
-            new UuidFactory(),
-            new OrmFactory()
+            new OrmFactory(),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
     ResetTokenGarbageCollectionService::class => function () {
@@ -136,14 +139,16 @@ return [
     GetUserByPasswordResetTokenService::class => function () {
         return new GetUserByPasswordResetTokenService(
             new OrmFactory(),
-            Di::get(FetchUserService::class)
+            Di::get(FetchUserService::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
     ResetPasswordByTokenService::class => function () {
         return new ResetPasswordByTokenService(
-            Di::get(GetUserByPasswordResetTokenService::class),
+            Di::get(PDO::class),
             Di::get(SaveUserService::class),
-            Di::get(PDO::class)
+            Di::get('UuidFactoryWithOrderedTimeCodec'),
+            Di::get(GetUserByPasswordResetTokenService::class)
         );
     },
     SetNewPasswordService::class => function () {

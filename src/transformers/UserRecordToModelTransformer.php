@@ -30,19 +30,17 @@ class UserRecordToModelTransformer implements UserRecordToModelTransformerInterf
             new DateTimeZone($record['added_at_time_zone'])
         );
 
-        $model = new UserModel([
-            'guid' => $record['guid'],
-            'emailAddress' => $record['email_address'],
-            'passwordHash' => $record['password_hash'],
-            'userData' => json_decode(
-                \is_string($record['user_data']) ? $record['user_data'] : '',
-                true
-            ),
-            'addedAt' => $addedAt,
-        ]);
+        $model = new UserModel();
+        $model->setGuidAsBytes($record['guid']);
+        $model->emailAddress($record['email_address']);
+        $model->passwordHash($record['password_hash']);
+        $model->userData(json_decode(
+            \is_string($record['user_data']) ? $record['user_data'] : '',
+            true
+        ));
+        $model->addedAt($addedAt);
 
         unset(
-            $record['id'],
             $record['guid'],
             $record['email_address'],
             $record['password_hash'],
