@@ -24,8 +24,8 @@ class UserTable extends Table
     const COLUMNS = [
         'guid' => [
             'name' => 'guid',
-            'type' => 'varchar',
-            'size' => 255,
+            'type' => 'binary',
+            'size' => 16,
             'scale' => null,
             'notnull' => true,
             'default' => null,
@@ -60,8 +60,8 @@ class UserTable extends Table
             'type' => 'text',
             'size' => 65535,
             'scale' => null,
-            'notnull' => false,
-            'default' => 'NULL',
+            'notnull' => true,
+            'default' => null,
             'autoinc' => false,
             'primary' => false,
             'options' => null,
@@ -103,7 +103,7 @@ class UserTable extends Table
         'guid' => null,
         'email_address' => null,
         'password_hash' => null,
-        'user_data' => 'NULL',
+        'user_data' => null,
         'added_at' => null,
         'added_at_time_zone' => null,
     ];
