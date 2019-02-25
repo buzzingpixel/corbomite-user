@@ -35,9 +35,7 @@ class DeleteUserService
 
     public function delete(UserModelInterface $user): void
     {
-        $before = new UserBeforeDeleteEvent($user);
-
-        $this->dispatcher->dispatch($before->name(), $before->provider(), $before);
+        $this->dispatcher->dispatch(new UserBeforeDeleteEvent($user));
 
         $statement = $this->pdo->prepare('DELETE FROM `users` WHERE guid=:guid');
         $statement->execute([
@@ -54,8 +52,6 @@ class DeleteUserService
             ':user_guid' => $user->getGuidAsBytes(),
         ]);
 
-        $after = new UserAfterDeleteEvent($user);
-
-        $this->dispatcher->dispatch($after->name(), $after->provider(), $after);
+        $this->dispatcher->dispatch(new UserAfterDeleteEvent($user));
     }
 }

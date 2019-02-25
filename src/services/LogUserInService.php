@@ -76,9 +76,7 @@ class LogUserInService
             throw new UserDoesNotExistException();
         }
 
-        $before = new UserBeforeLogInEvent($user);
-
-        $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+        $this->dispatcher->dispatch(new UserBeforeLogInEvent($user));
 
         if (password_needs_rehash($user->passwordHash(), PASSWORD_DEFAULT)) {
             $user->passwordHash(password_hash($password, PASSWORD_DEFAULT));
@@ -99,8 +97,6 @@ class LogUserInService
 
         $this->cookieApi->saveCookie($cookie);
 
-        $after = new UserAfterLogInEvent($user);
-
-        $this->dispatcher->dispatch($after->provider(), $after->name(), $after);
+        $this->dispatcher->dispatch(new UserAfterLogInEvent($user));
     }
 }

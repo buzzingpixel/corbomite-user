@@ -68,28 +68,20 @@ class SaveUserService
         }
 
         if (! $this->checkIfGuidExists($model->getGuidAsBytes())) {
-            $before = new UserBeforeSaveEvent($model, true);
-
-            $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+            $this->dispatcher->dispatch(new UserBeforeSaveEvent($model, true));
 
             $this->saveNewUser($model);
 
-            $after = new UserAfterSaveEvent($model, true);
-
-            $this->dispatcher->dispatch($after->provider(), $after->name(), $after);
+            $this->dispatcher->dispatch(new UserAfterSaveEvent($model, true));
 
             return;
         }
 
-        $before = new UserBeforeSaveEvent($model, false);
-
-        $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+        $this->dispatcher->dispatch(new UserBeforeSaveEvent($model, false));
 
         $this->saveExistingUser($model);
 
-        $after = new UserAfterSaveEvent($model, false);
-
-        $this->dispatcher->dispatch($after->provider(), $after->name(), $after);
+        $this->dispatcher->dispatch(new UserAfterSaveEvent($model, false));
     }
 
     /**

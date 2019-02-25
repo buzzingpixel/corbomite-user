@@ -63,14 +63,10 @@ class RegisterUserService
         $model->emailAddress($emailAddress);
         $model->passwordHash(password_hash($password, PASSWORD_DEFAULT));
 
-        $before = new UserBeforeRegisterEvent($model);
-
-        $this->dispatcher->dispatch($before->provider(), $before->name(), $before);
+        $this->dispatcher->dispatch(new UserBeforeRegisterEvent($model));
 
         $this->saveUser->saveUser($model);
 
-        $after = new UserAfterRegisterEvent($model);
-
-        $this->dispatcher->dispatch($after->name(), $after->name(), $after);
+        $this->dispatcher->dispatch(new UserAfterRegisterEvent($model));
     }
 }
