@@ -1,6 +1,7 @@
 {
     "name": "buzzingpixel/corbomite-user",
-    "version": "3.0.0",
+    "version": "3.0.1",
+    "license": "Apache-2.0",
     "description": "Corbomite User",
     "authors": [
         {
@@ -20,7 +21,7 @@
         "buzzingpixel/cookie-api": "^1.1",
         "buzzingpixel/request-data-store": "^1.0.1",
         "buzzingpixel/corbomite-flash-data": "^1.0.1",
-        "zendframework/zend-diactoros": "^1.8",
+        "zendframework/zend-diactoros": "^1.8 || ^2.0.0",
         "buzzingpixel/corbomite-events": "^2.0"
     },
     "require-dev": {
