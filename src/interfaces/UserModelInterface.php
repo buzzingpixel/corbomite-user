@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace corbomite\user\interfaces;
 
 use corbomite\db\interfaces\UuidModelInterface;
-use DateTime;
+use DateTimeInterface;
 
 interface UserModelInterface
 {
@@ -72,7 +72,7 @@ interface UserModelInterface
     /**
      * Returns value. Sets value if incoming argument set.
      */
-    public function addedAt(?DateTime $val = null) : ?DateTime;
+    public function addedAt(?DateTimeInterface $val = null) : ?DateTimeInterface;
 
     /**
      * Returns value. Sets value if incoming argument set.

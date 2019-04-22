@@ -6,7 +6,8 @@ namespace corbomite\user\models;
 
 use corbomite\db\traits\UuidTrait;
 use corbomite\user\interfaces\UserModelInterface;
-use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 use function array_key_exists;
 use function explode;
@@ -23,7 +24,7 @@ class UserModel implements UserModelInterface
     public function __construct(array $props = [])
     {
         /** @noinspection PhpUnhandledExceptionInspection */
-        $this->addedAt = new DateTime('now', new DateTimeZone('UTC'));
+        $this->addedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
 
         foreach ($props as $key => $val) {
             $this->{$key}($val);
@@ -105,12 +106,21 @@ class UserModel implements UserModelInterface
         return $val;
     }
 
-    /** @var DateTime */
+    /** @var DateTimeInterface */
     private $addedAt;
 
-    public function addedAt(?DateTime $addedAt = null) : ?DateTime
+    public function addedAt(?DateTimeInterface $addedAt = null) : ?DateTimeInterface
     {
-        return $this->addedAt = $addedAt ?? $this->addedAt;
+        if (! $addedAt) {
+            return $this->addedAt;
+        }
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->addedAt = (new DateTimeImmutable())
+            ->setTimestamp($addedAt->getTimestamp())
+            ->setTimezone($addedAt->getTimezone());
+
+        return $this->addedAt;
     }
 
     /** @var mixed[] */
