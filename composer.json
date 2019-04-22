@@ -14,7 +14,7 @@
         "php": ">=7.2",
         "ext-json": "*",
         "ext-pdo": "*",
-        "buzzingpixel/cookie-api": "^1.1",
+        "buzzingpixel/cookie-api": "^2.0.1",
         "buzzingpixel/corbomite-db": "^1.2.1",
         "buzzingpixel/corbomite-di": "^1.0",
         "buzzingpixel/corbomite-events": "^2.0",
