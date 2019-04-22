@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use buzzingpixel\cookieapi\CookieApi;
+use Composer\Autoload\ClassLoader;
 use corbomite\cli\services\CliQuestionService;
 use corbomite\db\Factory as DbFactory;
 use corbomite\db\Factory as OrmFactory;
@@ -15,6 +16,7 @@ use corbomite\requestdatastore\DataStore;
 use corbomite\user\actions\CreateMigrationsAction;
 use corbomite\user\actions\CreateUserAction;
 use corbomite\user\http\actions\LogInAction;
+use corbomite\user\PhpCalls;
 use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\DeleteUserService;
 use corbomite\user\services\FetchCurrentUserService;
@@ -35,13 +37,30 @@ use corbomite\user\transformers\UserRecordToModelTransformer;
 use corbomite\user\twigextensions\UserTwigExtension;
 use corbomite\user\UserApi;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Filesystem\Filesystem;
 use Zend\Diactoros\Response;
 
 return [
     CreateMigrationsAction::class => static function () {
+        $appBasePath = null;
+
+        if (defined('APP_BASE_PATH')) {
+            $appBasePath = APP_BASE_PATH;
+        }
+
+        if (! $appBasePath) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $reflection = new ReflectionClass(ClassLoader::class);
+
+            $appBasePath = dirname($reflection->getFileName(), 3);
+        }
+
         return new CreateMigrationsAction(
             __DIR__ . '/migrations',
-            new ConsoleOutput()
+            new ConsoleOutput(),
+            $appBasePath,
+            new Filesystem(),
+            new PhpCalls()
         );
     },
     CreateUserAction::class => static function () {

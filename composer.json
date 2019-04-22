@@ -22,6 +22,7 @@
         "buzzingpixel/corbomite-migrations": "^1.0",
         "buzzingpixel/request-data-store": "^1.0.1",
         "ramsey/uuid": "^3.8",
+        "symfony/filesystem": "^4.2",
         "zendframework/zend-diactoros": "^1.8 || ^2.0.0"
     },
     "require-dev": {

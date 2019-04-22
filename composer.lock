@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9358f1f4caedd8ed3d8583a360d78bce",
+    "content-hash": "d93660749d3cd86fd55693bbe3501f37",
     "packages": [
         {
             "name": "2bj/phanybar",
@@ -3730,7 +3730,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v4.2.5",
+            "version": "v4.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
