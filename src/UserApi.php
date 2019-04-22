@@ -1,48 +1,45 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user;
 
-use corbomite\di\Di;
 use corbomite\db\Factory as DbFactory;
-use corbomite\user\services\SaveUserService;
-use corbomite\user\services\FetchUserService;
-use corbomite\user\services\LogUserInService;
-use corbomite\user\services\DeleteUserService;
-use corbomite\user\services\FetchUsersService;
-use corbomite\user\interfaces\UserApiInterface;
 use corbomite\db\interfaces\QueryModelInterface;
-use corbomite\user\services\RegisterUserService;
-use corbomite\user\interfaces\UserModelInterface;
-use corbomite\user\exceptions\UserExistsException;
-use corbomite\user\services\SetNewPasswordService;
-use corbomite\user\services\FetchCurrentUserService;
-use corbomite\user\services\LogCurrentUserOutService;
+use corbomite\di\Di;
+use corbomite\user\exceptions\InvalidEmailAddressException;
 use corbomite\user\exceptions\InvalidPasswordException;
-use corbomite\user\services\GeneratePasswordResetToken;
+use corbomite\user\exceptions\InvalidResetTokenException;
+use corbomite\user\exceptions\InvalidUserModelException;
 use corbomite\user\exceptions\PasswordTooShortException;
 use corbomite\user\exceptions\UserDoesNotExistException;
-use corbomite\user\exceptions\InvalidUserModelException;
-use corbomite\user\services\ValidateUserPasswordService;
-use corbomite\user\services\ResetPasswordByTokenService;
-use corbomite\user\exceptions\InvalidResetTokenException;
-use corbomite\user\exceptions\InvalidEmailAddressException;
+use corbomite\user\exceptions\UserExistsException;
+use corbomite\user\interfaces\UserApiInterface;
+use corbomite\user\interfaces\UserModelInterface;
+use corbomite\user\services\DeleteUserService;
+use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\services\FetchUserService;
+use corbomite\user\services\FetchUsersService;
+use corbomite\user\services\GeneratePasswordResetToken;
 use corbomite\user\services\GetUserByPasswordResetTokenService;
+use corbomite\user\services\LogCurrentUserOutService;
+use corbomite\user\services\LogUserInService;
+use corbomite\user\services\RegisterUserService;
+use corbomite\user\services\ResetPasswordByTokenService;
+use corbomite\user\services\SaveUserService;
+use corbomite\user\services\SetNewPasswordService;
+use corbomite\user\services\ValidateUserPasswordService;
 
 class UserApi implements UserApiInterface
 {
+    /** @var Di */
     private $di;
+    /** @var DbFactory */
     private $dbFactory;
 
     public function __construct(Di $di, DbFactory $dbFactory)
     {
-        $this->di = $di;
+        $this->di        = $di;
         $this->dbFactory = $dbFactory;
     }
 
@@ -53,7 +50,7 @@ class UserApi implements UserApiInterface
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function registerUser(string $emailAddress, string $password): void
+    public function registerUser(string $emailAddress, string $password) : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(RegisterUserService::class);
@@ -66,33 +63,35 @@ class UserApi implements UserApiInterface
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function saveUser(UserModelInterface $user): void
+    public function saveUser(UserModelInterface $user) : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SaveUserService::class);
         $service->saveUser($user);
     }
 
-    public function fetchUser(string $identifier): ?UserModelInterface
+    public function fetchUser(string $identifier) : ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUserService::class);
+
         return $service->fetchUser($identifier);
     }
 
-    public function makeQueryModel(): QueryModelInterface
+    public function makeQueryModel() : QueryModelInterface
     {
         return $this->dbFactory->makeQueryModel();
     }
 
-    public function fetchCurrentUser(): ?UserModelInterface
+    public function fetchCurrentUser() : ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchCurrentUserService::class);
+
         return $service();
     }
 
-    public function fetchOne(?QueryModelInterface $queryModel = null): ?UserModelInterface
+    public function fetchOne(?QueryModelInterface $queryModel = null) : ?UserModelInterface
     {
         if (! $queryModel) {
             $queryModel = $this->makeQueryModel();
@@ -104,7 +103,10 @@ class UserApi implements UserApiInterface
         return $this->fetchAll($queryModel)[0] ?? null;
     }
 
-    public function fetchAll(?QueryModelInterface $queryModel = null): array
+    /**
+     * @return UserModelInterface[]
+     */
+    public function fetchAll(?QueryModelInterface $queryModel = null) : array
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(FetchUsersService::class);
@@ -123,11 +125,12 @@ class UserApi implements UserApiInterface
     public function validateUserPassword(
         string $identifier,
         string $password
-    ): bool {
+    ) : bool {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(
             ValidateUserPasswordService::class
         );
+
         return $service->validateUserPassword($identifier, $password);
     }
 
@@ -138,31 +141,33 @@ class UserApi implements UserApiInterface
      * @throws InvalidUserModelException
      * @throws InvalidEmailAddressException
      */
-    public function logUserIn(string $emailAddress, string $password): void
+    public function logUserIn(string $emailAddress, string $password) : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(LogUserInService::class);
         $service->logUserIn($emailAddress, $password);
     }
 
-    public function logCurrentUserOut(): void
+    public function logCurrentUserOut() : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(LogCurrentUserOutService::class);
         $service->logCurrentUserOut();
     }
 
-    public function generatePasswordResetToken(UserModelInterface $user): string
+    public function generatePasswordResetToken(UserModelInterface $user) : string
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GeneratePasswordResetToken::class);
+
         return $service->generate($user);
     }
 
-    public function getUserByPasswordResetToken(string $token): ?UserModelInterface
+    public function getUserByPasswordResetToken(string $token) : ?UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(GetUserByPasswordResetTokenService::class);
+
         return $service->get($token);
     }
 
@@ -174,7 +179,7 @@ class UserApi implements UserApiInterface
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function resetPasswordByToken(string $token, string $password): void
+    public function resetPasswordByToken(string $token, string $password) : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(ResetPasswordByTokenService::class);
@@ -188,14 +193,14 @@ class UserApi implements UserApiInterface
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function setNewPassword(UserModelInterface $user, string $password): void
+    public function setNewPassword(UserModelInterface $user, string $password) : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(SetNewPasswordService::class);
         $service->set($user, $password);
     }
 
-    public function deleteUser(UserModelInterface $user): void
+    public function deleteUser(UserModelInterface $user) : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $service = $this->di->getFromDefinition(DeleteUserService::class);

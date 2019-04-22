@@ -1,23 +1,21 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use Ramsey\Uuid\UuidFactoryInterface;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
+use Ramsey\Uuid\UuidFactoryInterface;
 
 class LogCurrentUserOutService
 {
-    private $cookieApi;
+    /** @var OrmFactory */
     private $ormFactory;
+    /** @var CookieApi */
+    private $cookieApi;
+    /** @var UuidFactoryInterface */
     private $uuidFactory;
 
     public function __construct(
@@ -25,17 +23,17 @@ class LogCurrentUserOutService
         CookieApi $cookieApi,
         UuidFactoryInterface $uuidFactory
     ) {
-        $this->cookieApi = $cookieApi;
-        $this->ormFactory = $ormFactory;
+        $this->ormFactory  = $ormFactory;
+        $this->cookieApi   = $cookieApi;
         $this->uuidFactory = $uuidFactory;
     }
 
-    public function __invoke(): void
+    public function __invoke() : void
     {
         $this->logCurrentUserOut();
     }
 
-    public function logCurrentUserOut(): void
+    public function logCurrentUserOut() : void
     {
         $cookie = $this->cookieApi->retrieveCookie('user_session_token');
 

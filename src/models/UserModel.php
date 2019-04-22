@@ -1,23 +1,25 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\models;
 
-use DateTime;
-use DateTimeZone;
 use corbomite\db\traits\UuidTrait;
 use corbomite\user\interfaces\UserModelInterface;
+use DateTime;
+use DateTimeZone;
+use function array_key_exists;
+use function explode;
 
 class UserModel implements UserModelInterface
 {
     use UuidTrait;
 
+    /** @noinspection PhpDocMissingThrowsInspection */
+
+    /**
+     * @param mixed[] $props
+     */
     public function __construct(array $props = [])
     {
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -28,27 +30,40 @@ class UserModel implements UserModelInterface
         }
     }
 
+    /** @var string */
     private $emailAddress = '';
 
-    public function emailAddress(?string $emailAddress = null): string
+    public function emailAddress(?string $emailAddress = null) : string
     {
         return $this->emailAddress = $emailAddress ?? $this->emailAddress;
     }
 
+    /** @var string */
     private $passwordHash = '';
 
-    public function passwordHash(?string $passwordHash = null): string
+    public function passwordHash(?string $passwordHash = null) : string
     {
         return $this->passwordHash = $passwordHash ?? $this->passwordHash;
     }
 
+    /** @var mixed[] */
     private $userData = [];
 
-    public function userData(?array $userData = null): array
+    /**
+     * @param mixed[]|null $userData
+     *
+     * @return mixed[]
+     */
+    public function userData(?array $userData = null) : array
     {
         return $this->userData = $userData ?? $this->userData;
     }
 
+    /**
+     * @param mixed $val
+     *
+     * @return mixed
+     */
     public function userDataItem(string $key, $val = null)
     {
         if ($val !== null) {
@@ -58,7 +73,10 @@ class UserModel implements UserModelInterface
         return $this->getUserDataItem($key);
     }
 
-    private function setUserDataItem(string $key, $val): void
+    /**
+     * @param mixed $val
+     */
+    private function setUserDataItem(string $key, $val) : void
     {
         $loc = &$this->userData;
 
@@ -69,6 +87,9 @@ class UserModel implements UserModelInterface
         $loc = $val;
     }
 
+    /**
+     * @return mixed
+     */
     private function getUserDataItem(string $key)
     {
         $val = $this->userData;
@@ -84,36 +105,49 @@ class UserModel implements UserModelInterface
         return $val;
     }
 
+    /** @var DateTime */
     private $addedAt;
 
-    public function addedAt(?DateTime $addedAt = null): ?DateTime
+    public function addedAt(?DateTime $addedAt = null) : ?DateTime
     {
         return $this->addedAt = $addedAt ?? $this->addedAt;
     }
 
+    /** @var mixed[] */
     private $extendedProperties = [];
 
-    public function extendedProperties(?array $val = null): array
+    /**
+     * @param mixed[] $val
+     *
+     * @return mixed[]
+     */
+    public function extendedProperties(?array $val = null) : array
     {
         return $this->extendedProperties = $val ?? $this->extendedProperties;
     }
 
-    public function setExtendedProperty(string $key, $val): void
+    /**
+     * @param mixed $val
+     */
+    public function setExtendedProperty(string $key, $val) : void
     {
         $this->extendedProperties[$key] = $val;
     }
 
-    public function hasExtendedProperty(string $key): bool
+    public function hasExtendedProperty(string $key) : bool
     {
         return array_key_exists($key, $this->extendedProperties);
     }
 
+    /**
+     * @return mixed
+     */
     public function getExtendedProperty(string $key)
     {
         return $this->extendedProperties[$key] ?? null;
     }
 
-    public function removeExtendedProperty(string $key): void
+    public function removeExtendedProperty(string $key) : void
     {
         if (! $this->hasExtendedProperty($key)) {
             return;

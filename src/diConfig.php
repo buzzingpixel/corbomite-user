@@ -1,93 +1,70 @@
 <?php
+
 declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
-
-use corbomite\di\Di;
-use corbomite\db\PDO;
-use corbomite\user\UserApi;
-use Zend\Diactoros\Response;
-use Ramsey\Uuid\UuidFactory;
-use corbomite\events\EventDispatcher;
 use buzzingpixel\cookieapi\CookieApi;
-use corbomite\flashdata\FlashDataApi;
+use corbomite\cli\services\CliQuestionService;
 use corbomite\db\Factory as DbFactory;
 use corbomite\db\Factory as OrmFactory;
-use corbomite\requestdatastore\DataStore;
-use corbomite\user\http\actions\LogInAction;
-use corbomite\user\actions\CreateUserAction;
-use corbomite\user\services\SaveUserService;
+use corbomite\db\PDO;
 use corbomite\db\services\BuildQueryService;
-use corbomite\user\services\LogUserInService;
-use corbomite\user\services\FetchUserService;
-use corbomite\user\services\DeleteUserService;
-use corbomite\user\services\FetchUsersService;
-use corbomite\cli\services\CliQuestionService;
-use corbomite\user\services\RegisterUserService;
-use corbomite\user\services\SetNewPasswordService;
+use corbomite\di\Di;
+use corbomite\events\EventDispatcher;
+use corbomite\flashdata\FlashDataApi;
+use corbomite\requestdatastore\DataStore;
 use corbomite\user\actions\CreateMigrationsAction;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use corbomite\user\twigextensions\UserTwigExtension;
-use corbomite\user\services\FetchCurrentUserService;
-use corbomite\user\services\LogCurrentUserOutService;
+use corbomite\user\actions\CreateUserAction;
+use corbomite\user\http\actions\LogInAction;
 use corbomite\user\services\CreateUserSessionService;
+use corbomite\user\services\DeleteUserService;
+use corbomite\user\services\FetchCurrentUserService;
+use corbomite\user\services\FetchUserService;
+use corbomite\user\services\FetchUsersService;
 use corbomite\user\services\GeneratePasswordResetToken;
-use corbomite\user\services\ValidateUserPasswordService;
-use corbomite\user\services\ResetPasswordByTokenService;
-use corbomite\user\transformers\UserRecordToModelTransformer;
-use corbomite\user\services\SessionGarbageCollectionService;
-use corbomite\user\services\ResetTokenGarbageCollectionService;
 use corbomite\user\services\GetUserByPasswordResetTokenService;
+use corbomite\user\services\LogCurrentUserOutService;
+use corbomite\user\services\LogUserInService;
+use corbomite\user\services\RegisterUserService;
+use corbomite\user\services\ResetPasswordByTokenService;
+use corbomite\user\services\ResetTokenGarbageCollectionService;
+use corbomite\user\services\SaveUserService;
+use corbomite\user\services\SessionGarbageCollectionService;
+use corbomite\user\services\SetNewPasswordService;
+use corbomite\user\services\ValidateUserPasswordService;
+use corbomite\user\transformers\UserRecordToModelTransformer;
+use corbomite\user\twigextensions\UserTwigExtension;
+use corbomite\user\UserApi;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Zend\Diactoros\Response;
 
 return [
-    CreateMigrationsAction::class => function () {
+    CreateMigrationsAction::class => static function () {
         return new CreateMigrationsAction(
             __DIR__ . '/migrations',
             new ConsoleOutput()
         );
     },
-    CreateUserAction::class => function () {
+    CreateUserAction::class => static function () {
         return new CreateUserAction(
             Di::get(UserApi::class),
             new ConsoleOutput(),
             Di::get(CliQuestionService::class)
         );
     },
-    UserApi::class => function () {
-        return new UserApi(new Di(), new DbFactory());
-    },
-    RegisterUserService::class => function () {
-        return new RegisterUserService(
-            Di::get(SaveUserService::class),
-            Di::get(EventDispatcher::class)
-        );
-    },
-    SaveUserService::class => function () {
-        return new SaveUserService(
-            Di::get(PDO::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec'),
-            Di::get(EventDispatcher::class)
-        );
-    },
-    FetchUserService::class => function () {
-        return new FetchUserService(
-            new DbFactory(),
-            Di::get(FetchUsersService::class),
+    CreateUserSessionService::class => static function () {
+        return new CreateUserSessionService(
+            new OrmFactory(),
+            Di::get(FetchUserService::class),
             Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    FetchUsersService::class => function () {
-        return new FetchUsersService(
+    DeleteUserService::class => static function () {
+        return new DeleteUserService(
             Di::get(PDO::class),
-            Di::get(BuildQueryService::class),
-            Di::get(UserRecordToModelTransformer::class)
+            Di::get(EventDispatcher::class)
         );
     },
-    FetchCurrentUserService::class => function () {
+    FetchCurrentUserService::class => static function () {
         return new FetchCurrentUserService(
             new OrmFactory(),
             Di::get(CookieApi::class),
@@ -95,19 +72,42 @@ return [
             Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    ValidateUserPasswordService::class => function () {
-        return new ValidateUserPasswordService(
-            Di::get(FetchUserService::class)
-        );
-    },
-    CreateUserSessionService::class => function () {
-        return new CreateUserSessionService(
-            new OrmFactory(),
-            Di::get(FetchUserService::class),
+    FetchUserService::class => static function () {
+        return new FetchUserService(
+            new DbFactory(),
+            Di::get(FetchUsersService::class),
             Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    LogUserInService::class => function () {
+    FetchUsersService::class => static function () {
+        return new FetchUsersService(
+            Di::get(PDO::class),
+            Di::get(BuildQueryService::class),
+            Di::get(UserRecordToModelTransformer::class)
+        );
+    },
+    GeneratePasswordResetToken::class => static function () {
+        return new GeneratePasswordResetToken(
+            new OrmFactory(),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
+        );
+    },
+    LogCurrentUserOutService::class => static function () {
+        return new LogCurrentUserOutService(
+            new OrmFactory(),
+            Di::get(CookieApi::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec')
+        );
+    },
+    LogInAction::class => static function () {
+        return new LogInAction(
+            Di::get(UserApi::class),
+            new Response(),
+            Di::get(FlashDataApi::class),
+            Di::get(DataStore::class)
+        );
+    },
+    LogUserInService::class => static function () {
         return new LogUserInService(
             Di::get(CookieApi::class),
             Di::get(SaveUserService::class),
@@ -117,33 +117,41 @@ return [
             Di::get(ValidateUserPasswordService::class)
         );
     },
-    LogCurrentUserOutService::class => function () {
-        return new LogCurrentUserOutService(
-            new OrmFactory(),
-            Di::get(CookieApi::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+    RegisterUserService::class => static function () {
+        return new RegisterUserService(
+            Di::get(SaveUserService::class),
+            Di::get(EventDispatcher::class)
         );
     },
-    SessionGarbageCollectionService::class => function () {
-        return new SessionGarbageCollectionService(Di::get(PDO::class));
-    },
-    GeneratePasswordResetToken::class => function () {
-        return new GeneratePasswordResetToken(
-            new OrmFactory(),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
-        );
-    },
-    ResetTokenGarbageCollectionService::class => function () {
+    ResetTokenGarbageCollectionService::class => static function () {
         return new ResetTokenGarbageCollectionService(Di::get(PDO::class));
     },
-    GetUserByPasswordResetTokenService::class => function () {
+    SaveUserService::class => static function () {
+        return new SaveUserService(
+            Di::get(PDO::class),
+            Di::get('UuidFactoryWithOrderedTimeCodec'),
+            Di::get(EventDispatcher::class)
+        );
+    },
+    SessionGarbageCollectionService::class => static function () {
+        return new SessionGarbageCollectionService(Di::get(PDO::class));
+    },
+    UserApi::class => static function () {
+        return new UserApi(new Di(), new DbFactory());
+    },
+    ValidateUserPasswordService::class => static function () {
+        return new ValidateUserPasswordService(
+            Di::get(FetchUserService::class)
+        );
+    },
+    GetUserByPasswordResetTokenService::class => static function () {
         return new GetUserByPasswordResetTokenService(
             new OrmFactory(),
             Di::get(FetchUserService::class),
             Di::get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    ResetPasswordByTokenService::class => function () {
+    ResetPasswordByTokenService::class => static function () {
         return new ResetPasswordByTokenService(
             Di::get(PDO::class),
             Di::get(SaveUserService::class),
@@ -151,27 +159,13 @@ return [
             Di::get(GetUserByPasswordResetTokenService::class)
         );
     },
-    SetNewPasswordService::class => function () {
+    SetNewPasswordService::class => static function () {
         return new SetNewPasswordService(Di::get(SaveUserService::class));
     },
-    UserRecordToModelTransformer::class => function () {
+    UserRecordToModelTransformer::class => static function () {
         return new UserRecordToModelTransformer();
     },
-    LogInAction::class => function () {
-        return new LogInAction(
-            Di::get(UserApi::class),
-            new Response(),
-            Di::get(FlashDataApi::class),
-            Di::get(DataStore::class)
-        );
-    },
-    UserTwigExtension::class => function () {
+    UserTwigExtension::class => static function () {
         return new UserTwigExtension(Di::get(UserApi::class));
-    },
-    DeleteUserService::class => function () {
-        return new DeleteUserService(
-            Di::get(PDO::class),
-            Di::get(EventDispatcher::class)
-        );
     },
 ];

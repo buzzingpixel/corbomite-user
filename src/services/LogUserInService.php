@@ -1,32 +1,37 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use DateTime;
 use buzzingpixel\cookieapi\CookieApi;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\events\UserAfterLogInEvent;
 use corbomite\user\events\UserBeforeLogInEvent;
-use corbomite\user\exceptions\UserExistsException;
-use corbomite\user\exceptions\InvalidPasswordException;
-use corbomite\user\exceptions\UserDoesNotExistException;
-use corbomite\user\exceptions\InvalidUserModelException;
-use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
+use corbomite\user\exceptions\InvalidPasswordException;
+use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\user\exceptions\UserDoesNotExistException;
+use corbomite\user\exceptions\UserExistsException;
+use DateTime;
+use const PASSWORD_DEFAULT;
+use function password_hash;
+use function password_needs_rehash;
+use function strtotime;
 
 class LogUserInService
 {
-    private $saveUser;
+    /** @var CookieApi */
     private $cookieApi;
+    /** @var SaveUserService */
+    private $saveUser;
+    /** @var FetchUserService */
     private $fetchUser;
+    /** @var EventDispatcherInterface */
     private $dispatcher;
+    /** @var CreateUserSessionService */
     private $createUserSession;
+    /** @var ValidateUserPasswordService */
     private $validateUserPassword;
 
     public function __construct(
@@ -37,11 +42,11 @@ class LogUserInService
         CreateUserSessionService $createUserSession,
         ValidateUserPasswordService $validateUserPassword
     ) {
-        $this->saveUser = $saveUser;
-        $this->cookieApi = $cookieApi;
-        $this->fetchUser = $fetchUser;
-        $this->dispatcher = $dispatcher;
-        $this->createUserSession = $createUserSession;
+        $this->cookieApi            = $cookieApi;
+        $this->saveUser             = $saveUser;
+        $this->fetchUser            = $fetchUser;
+        $this->dispatcher           = $dispatcher;
+        $this->createUserSession    = $createUserSession;
         $this->validateUserPassword = $validateUserPassword;
     }
 
@@ -52,7 +57,7 @@ class LogUserInService
      * @throws InvalidUserModelException
      * @throws InvalidEmailAddressException
      */
-    public function __invoke(string $emailAddress, string $password): void
+    public function __invoke(string $emailAddress, string $password) : void
     {
         $this->logUserIn($emailAddress, $password);
     }
@@ -64,7 +69,7 @@ class LogUserInService
      * @throws InvalidUserModelException
      * @throws InvalidEmailAddressException
      */
-    public function logUserIn(string $emailAddress, string $password): void
+    public function logUserIn(string $emailAddress, string $password) : void
     {
         if (! $this->validateUserPassword->validateUserPassword($emailAddress, $password)) {
             throw new InvalidPasswordException();

@@ -1,31 +1,33 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use PDO;
-use DateTime;
-use DateTimeZone;
-use Ramsey\Uuid\UuidFactoryInterface;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\events\UserAfterSaveEvent;
 use corbomite\user\events\UserBeforeSaveEvent;
-use corbomite\user\interfaces\UserModelInterface;
-use corbomite\user\exceptions\UserExistsException;
-use corbomite\user\exceptions\UserDoesNotExistException;
-use corbomite\user\exceptions\InvalidUserModelException;
-use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
+use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\user\exceptions\UserDoesNotExistException;
+use corbomite\user\exceptions\UserExistsException;
+use corbomite\user\interfaces\UserModelInterface;
+use DateTime;
+use DateTimeZone;
+use PDO;
+use Ramsey\Uuid\UuidFactoryInterface;
+use const FILTER_VALIDATE_EMAIL;
+use function array_merge;
+use function filter_var;
+use function json_encode;
 
 class SaveUserService
 {
+    /** @var PDO */
     private $pdo;
+    /** @var EventDispatcherInterface */
     private $dispatcher;
+    /** @var UuidFactoryInterface */
     private $uuidFactory;
 
     public function __construct(
@@ -33,8 +35,8 @@ class SaveUserService
         UuidFactoryInterface $uuidFactory,
         EventDispatcherInterface $dispatcher
     ) {
-        $this->pdo = $pdo;
-        $this->dispatcher = $dispatcher;
+        $this->pdo         = $pdo;
+        $this->dispatcher  = $dispatcher;
         $this->uuidFactory = $uuidFactory;
     }
 
@@ -44,7 +46,7 @@ class SaveUserService
      * @throws UserDoesNotExistException
      * @throws InvalidEmailAddressException
      */
-    public function __invoke(UserModelInterface $model): void
+    public function __invoke(UserModelInterface $model) : void
     {
         $this->saveUser($model);
     }
@@ -55,7 +57,7 @@ class SaveUserService
      * @throws UserDoesNotExistException
      * @throws InvalidEmailAddressException
      */
-    public function saveUser(UserModelInterface $model): void
+    public function saveUser(UserModelInterface $model) : void
     {
         if (! $model->passwordHash() ||
             ! $model->emailAddress()
@@ -87,7 +89,7 @@ class SaveUserService
     /**
      * @throws UserExistsException
      */
-    private function saveNewUser(UserModelInterface $model): void
+    private function saveNewUser(UserModelInterface $model) : void
     {
         if ($this->checkIfEmailRegistered($model->emailAddress())) {
             throw new UserExistsException();
@@ -97,7 +99,7 @@ class SaveUserService
         $dateTime = new DateTime();
         $dateTime->setTimezone(new DateTimeZone('UTC'));
 
-        $into = 'guid, email_address, password_hash, user_data, added_at, added_at_time_zone';
+        $into   = 'guid, email_address, password_hash, user_data, added_at, added_at_time_zone';
         $values = ':guid, :email_address, :password_hash, :user_data, :added_at, :added_at_time_zone';
 
         /** @noinspection PhpUnhandledExceptionInspection */
@@ -113,8 +115,8 @@ class SaveUserService
         ];
 
         foreach ($model->extendedProperties() as $key => $val) {
-            $into .= ', ' . $key;
-            $values .= ', :' . $key;
+            $into            .= ', ' . $key;
+            $values          .= ', :' . $key;
             $bind[':' . $key] = $val;
         }
 
@@ -137,7 +139,7 @@ class SaveUserService
     /**
      * @throws UserDoesNotExistException
      */
-    private function saveExistingUser(UserModelInterface $model): void
+    private function saveExistingUser(UserModelInterface $model) : void
     {
         if (! $this->checkIfGuidExists($model->getGuidAsBytes())) {
             throw new UserDoesNotExistException();
@@ -149,13 +151,13 @@ class SaveUserService
             ':user_data' => '',
         ];
 
-        $sql = 'UPDATE `users` SET';
+        $sql  = 'UPDATE `users` SET';
         $sql .= ' email_address=:email_address';
         $sql .= ', password_hash=:password_hash';
         $sql .= ', user_data=:user_data';
 
         foreach ($model->extendedProperties() as $key => $val) {
-            $sql .= ', ' . $key . '=:' . $key;
+            $sql             .= ', ' . $key . '=:' . $key;
             $bind[':' . $key] = $val;
         }
 
@@ -173,28 +175,24 @@ class SaveUserService
         $statement->execute($bind);
     }
 
-    private function checkIfEmailRegistered(string $emailAddress): bool
+    private function checkIfEmailRegistered(string $emailAddress) : bool
     {
         $query = $this->pdo->prepare(
             'SELECT COUNT(*) as total FROM `users` WHERE `email_address` = :email'
         );
 
-        $query->execute([
-            ':email' => $emailAddress,
-        ]);
+        $query->execute([':email' => $emailAddress]);
 
         return $query->fetch(PDO::FETCH_OBJ)->total > 0;
     }
 
-    private function checkIfGuidExists(string $guid): bool
+    private function checkIfGuidExists(string $guid) : bool
     {
         $query = $this->pdo->prepare(
             'SELECT COUNT(*) as total FROM `users` WHERE `guid` = :guid'
         );
 
-        $query->execute([
-            ':guid' => $guid,
-        ]);
+        $query->execute([':guid' => $guid]);
 
         return $query->fetch(PDO::FETCH_OBJ)->total > 0;
     }

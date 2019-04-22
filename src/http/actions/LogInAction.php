@@ -1,21 +1,27 @@
 <?php
+
 declare(strict_types=1);
 
 namespace corbomite\user\http\actions;
 
-use Throwable;
+use corbomite\flashdata\interfaces\FlashDataApiInterface;
+use corbomite\requestdatastore\DataStoreInterface;
+use corbomite\user\interfaces\UserApiInterface;
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use corbomite\user\interfaces\UserApiInterface;
-use corbomite\requestdatastore\DataStoreInterface;
-use corbomite\flashdata\interfaces\FlashDataApiInterface;
+use Throwable;
+use function mb_strtolower;
 
 class LogInAction
 {
+    /** @var UserApiInterface */
     private $userApi;
+    /** @var ResponseInterface */
     private $response;
+    /** @var FlashDataApiInterface */
     private $flashDataApi;
+    /** @var DataStoreInterface */
     private $requestDataStore;
 
     public function __construct(
@@ -24,15 +30,15 @@ class LogInAction
         FlashDataApiInterface $flashDataApi,
         DataStoreInterface $requestDataStore
     ) {
-        $this->userApi = $userApi;
-        $this->response = $response;
-        $this->flashDataApi = $flashDataApi;
+        $this->userApi          = $userApi;
+        $this->response         = $response;
+        $this->flashDataApi     = $flashDataApi;
         $this->requestDataStore = $requestDataStore;
     }
 
-    public function __invoke(ServerRequestInterface $request): ?ResponseInterface
+    public function __invoke(ServerRequestInterface $request) : ?ResponseInterface
     {
-        $requestMethod = strtolower(
+        $requestMethod = mb_strtolower(
             $request->getServerParams()['REQUEST_METHOD'] ?? 'get'
         );
 
@@ -40,15 +46,13 @@ class LogInAction
             throw new LogicException('Log In Action requires post request');
         }
 
-        $email = $request->getParsedBody()['email'] ?? '';
+        $email    = $request->getParsedBody()['email'] ?? '';
         $password = $request->getParsedBody()['password'] ?? '';
 
         try {
             $this->userApi->logUserIn($email, $password);
 
-            $flashDataModel =$this->flashDataApi->makeFlashDataModel([
-                'name' => 'LogInAction'
-            ]);
+            $flashDataModel =$this->flashDataApi->makeFlashDataModel(['name' => 'LogInAction']);
 
             $flashDataModel->dataItem('success', true);
 

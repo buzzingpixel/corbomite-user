@@ -1,122 +1,113 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\interfaces;
 
-use DateTime;
 use corbomite\db\interfaces\UuidModelInterface;
+use DateTime;
 
 interface UserModelInterface
 {
     /**
      * Sets incoming properties from the incoming array
-     * @param array $props
+     *
+     * @param mixed[] $props
      */
     public function __construct(array $props = []);
 
     /**
      * Returns value. Sets value if incoming argument set.
-     * @param string|null $guid
-     * @return string
      */
-    public function guid(?string $val = null): string;
+    public function guid(?string $val = null) : string;
 
     /**
      * Gets the UuidModel for the guid
-     * @return UuidModelInterface
      */
-    public function guidAsModel(): UuidModelInterface;
+    public function guidAsModel() : UuidModelInterface;
 
     /**
      * Gets the GUID as bytes for saving to the database in binary
-     * @return string
      */
-    public function getGuidAsBytes(): string;
+    public function getGuidAsBytes() : string;
 
     /**
      * Sets the GUID from bytes coming from the database binary column
-     * @param string $bytes
+     *
+     * @return mixed
      */
     public function setGuidAsBytes(string $bytes);
 
     /**
      * Returns value. Sets value if incoming argument set.
      * incoming string value
-     * @param string|null $guid
-     * @return string
      */
-    public function emailAddress(?string $val = null): string;
+    public function emailAddress(?string $val = null) : string;
 
     /**
      * Returns value. Sets value if incoming argument set.
      * incoming string value
-     * @param string|null $guid
-     * @return string
      */
-    public function passwordHash(?string $val = null): string;
+    public function passwordHash(?string $val = null) : string;
 
     /**
      * Returns value. Sets value if incoming argument set.
-     * @param array|null $guid
-     * @return string
+     *
+     * @param mixed[]|null $val
+     *
+     * @return mixed[]
      */
-    public function userData(?array $val = null): array;
+    public function userData(?array $val = null) : array;
 
     /**
      * Returns the value from the specified key in the data array if that key
      * exists, sets it if there is a specified incoming value
-     * @param string $key
+     *
      * @param mixed|null $val
+     *
      * @return mixed
      */
     public function userDataItem(string $key, $val = null);
 
     /**
      * Returns value. Sets value if incoming argument set.
-     * @param DateTime|null $addedAt
-     * @return DateTime|null
      */
-    public function addedAt(?DateTime $val = null): ?DateTime;
+    public function addedAt(?DateTime $val = null) : ?DateTime;
 
     /**
      * Returns value. Sets value if incoming argument set.
-     * @param array|null $guid
-     * @return string
+     *
+     * @param mixed[] $val
+     *
+     * @return mixed[]
      */
-    public function extendedProperties(?array $val = null): array;
+    public function extendedProperties(?array $val = null) : array;
 
     /**
      * Sets the value of an extended property
-     * @param string $key
+     *
      * @param mixed $val
      */
-    public function setExtendedProperty(string $key, $val): void;
+    public function setExtendedProperty(string $key, $val) : void;
 
     /**
      * Checks if an extended property exists.
      * Using getExtendedProperty and checking for null would be unreliable
      * since the value of an extended property could be null.
-     * @param string $key
-     * @return bool
      */
-    public function hasExtendedProperty(string $key): bool;
+    public function hasExtendedProperty(string $key) : bool;
 
     /**
      * Gets the value of an extended property
-     * @param string $key
+     *
      * @return mixed|null
      */
     public function getExtendedProperty(string $key);
 
     /**
      * Removes an extended property
-     * @param string $key
+     *
+     * @return mixed
      */
     public function removeExtendedProperty(string $key);
 }

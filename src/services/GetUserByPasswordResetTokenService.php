@@ -1,24 +1,23 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use Ramsey\Uuid\UuidFactoryInterface;
 use corbomite\db\Factory as OrmFactory;
-use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetToken;
 use corbomite\user\data\UserPasswordResetToken\UserPasswordResetTokenRecord;
+use corbomite\user\interfaces\UserModelInterface;
+use Ramsey\Uuid\UuidFactoryInterface;
+use function preg_match;
 
 class GetUserByPasswordResetTokenService
 {
-    private $fetchUser;
+    /** @var OrmFactory */
     private $ormFactory;
+    /** @var FetchUserService */
+    private $fetchUser;
+    /** @var UuidFactoryInterface */
     private $uuidFactory;
 
     public function __construct(
@@ -26,17 +25,17 @@ class GetUserByPasswordResetTokenService
         FetchUserService $fetchUser,
         UuidFactoryInterface $uuidFactory
     ) {
-        $this->fetchUser = $fetchUser;
-        $this->ormFactory = $ormFactory;
+        $this->ormFactory  = $ormFactory;
+        $this->fetchUser   = $fetchUser;
         $this->uuidFactory = $uuidFactory;
     }
 
-    public function __invoke(string $token): ?UserModelInterface
+    public function __invoke(string $token) : ?UserModelInterface
     {
         return $this->get($token);
     }
 
-    public function get(string $token): ?UserModelInterface
+    public function get(string $token) : ?UserModelInterface
     {
         $record = $this->fetchRecord($token);
 
@@ -47,7 +46,7 @@ class GetUserByPasswordResetTokenService
         return $this->fetchUser->fetchUser($record->user_guid);
     }
 
-    private function fetchRecord(string $token): ?UserPasswordResetTokenRecord
+    private function fetchRecord(string $token) : ?UserPasswordResetTokenRecord
     {
         if (! $this->isBinary($token)) {
             $token = $this->uuidFactory->fromString($token)->getBytes();
@@ -59,7 +58,10 @@ class GetUserByPasswordResetTokenService
             ->fetchRecord();
     }
 
-    private function isBinary($str): bool
+    /**
+     * @param mixed $str
+     */
+    private function isBinary($str) : bool
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
     }

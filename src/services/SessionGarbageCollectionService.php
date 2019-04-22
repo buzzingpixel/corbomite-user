@@ -1,20 +1,17 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
+use corbomite\db\PDO;
 use DateTime;
 use DateTimeZone;
-use corbomite\db\PDO;
+use function strtotime;
 
 class SessionGarbageCollectionService
 {
+    /** @var PDO */
     private $pdo;
 
     public function __construct(PDO $pdo)
@@ -22,7 +19,7 @@ class SessionGarbageCollectionService
         $this->pdo = $pdo;
     }
 
-    public function __invoke()
+    public function __invoke() : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $dateTime = new DateTime();
@@ -30,7 +27,7 @@ class SessionGarbageCollectionService
         $dateTime->setTimezone(new DateTimeZone('UTC'));
 
         $sql = 'DELETE FROM `user_sessions` WHERE last_touched_at < ?';
-        $q = $this->pdo->prepare($sql);
+        $q   = $this->pdo->prepare($sql);
         $q->execute([$dateTime->format('Y-m-d H:i:s')]);
     }
 }

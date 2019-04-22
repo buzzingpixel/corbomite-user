@@ -1,28 +1,31 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
 use corbomite\db\PDO;
-use Ramsey\Uuid\UuidFactoryInterface;
-use corbomite\user\exceptions\UserExistsException;
-use corbomite\user\exceptions\PasswordTooShortException;
-use corbomite\user\exceptions\InvalidUserModelException;
-use corbomite\user\exceptions\UserDoesNotExistException;
-use corbomite\user\exceptions\InvalidResetTokenException;
 use corbomite\user\exceptions\InvalidEmailAddressException;
+use corbomite\user\exceptions\InvalidResetTokenException;
+use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\user\exceptions\PasswordTooShortException;
+use corbomite\user\exceptions\UserDoesNotExistException;
+use corbomite\user\exceptions\UserExistsException;
+use Ramsey\Uuid\UuidFactoryInterface;
+use const PASSWORD_DEFAULT;
+use function mb_strlen;
+use function password_hash;
+use function preg_match;
 
 class ResetPasswordByTokenService
 {
+    /** @var PDO */
     private $pdo;
+    /** @var SaveUserService */
     private $saveUser;
+    /** @var UuidFactoryInterface */
     private $uuidFactory;
+    /** @var GetUserByPasswordResetTokenService */
     private $getUserByPasswordResetToken;
 
     public function __construct(
@@ -31,9 +34,9 @@ class ResetPasswordByTokenService
         UuidFactoryInterface $uuidFactory,
         GetUserByPasswordResetTokenService $getUserByPasswordResetToken
     ) {
-        $this->pdo = $pdo;
-        $this->saveUser = $saveUser;
-        $this->uuidFactory = $uuidFactory;
+        $this->pdo                         = $pdo;
+        $this->saveUser                    = $saveUser;
+        $this->uuidFactory                 = $uuidFactory;
         $this->getUserByPasswordResetToken = $getUserByPasswordResetToken;
     }
 
@@ -45,7 +48,7 @@ class ResetPasswordByTokenService
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function __invoke(string $token, string $password): void
+    public function __invoke(string $token, string $password) : void
     {
         $this->reset($token, $password);
     }
@@ -58,17 +61,19 @@ class ResetPasswordByTokenService
      * @throws UserDoesNotExistException
      * @throws UserExistsException
      */
-    public function reset(string $token, string $password): void
+    public function reset(string $token, string $password) : void
     {
         if (! $this->isBinary($token)) {
             $token = $this->uuidFactory->fromString($token)->getBytes();
         }
 
-        if (! $model = $this->getUserByPasswordResetToken->get($token)) {
+        $model = $this->getUserByPasswordResetToken->get($token);
+
+        if (! $model) {
             throw new InvalidResetTokenException();
         }
 
-        if (\strlen($password) < RegisterUserService::MIN_PASSWORD_LENGTH) {
+        if (mb_strlen($password) < RegisterUserService::MIN_PASSWORD_LENGTH) {
             throw new PasswordTooShortException();
         }
 
@@ -77,11 +82,14 @@ class ResetPasswordByTokenService
         $this->saveUser->saveUser($model);
 
         $sql = 'DELETE FROM user_password_reset_tokens WHERE guid = ?';
-        $q = $this->pdo->prepare($sql);
+        $q   = $this->pdo->prepare($sql);
         $q->execute([$token]);
     }
 
-    private function isBinary($str): bool
+    /**
+     * @param mixed $str
+     */
+    private function isBinary($str) : bool
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
     }
