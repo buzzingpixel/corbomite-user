@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace corbomite\user\twigextensions;
 
 use corbomite\user\interfaces\UserApiInterface;
-use Twig_Extension;
-use Twig_Function;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class UserTwigExtension extends Twig_Extension
+class UserTwigExtension extends AbstractExtension
 {
     /** @var UserApiInterface */
     private $userApi;
@@ -19,11 +19,11 @@ class UserTwigExtension extends Twig_Extension
     }
 
     /**
-     * @return Twig_Function[]
+     * @return TwigFunction[]
      */
     public function getFunctions() : array
     {
-        return [new Twig_Function('userApi', [$this, 'userApi'])];
+        return [new TwigFunction('userApi', [$this, 'userApi'])];
     }
 
     public function userApi() : UserApiInterface
