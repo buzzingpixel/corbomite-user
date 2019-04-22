@@ -9,7 +9,6 @@ use corbomite\db\Factory as DbFactory;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\db\PDO;
 use corbomite\db\services\BuildQueryService;
-use corbomite\di\Di;
 use corbomite\events\EventDispatcher;
 use corbomite\flashdata\FlashDataApi;
 use corbomite\requestdatastore\DataStore;
@@ -36,6 +35,7 @@ use corbomite\user\services\ValidateUserPasswordService;
 use corbomite\user\transformers\UserRecordToModelTransformer;
 use corbomite\user\twigextensions\UserTwigExtension;
 use corbomite\user\UserApi;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Filesystem\Filesystem;
 use Zend\Diactoros\Response;
@@ -63,128 +63,128 @@ return [
             new PhpCalls()
         );
     },
-    CreateUserAction::class => static function () {
+    CreateUserAction::class => static function (ContainerInterface $di) {
         return new CreateUserAction(
-            Di::get(UserApi::class),
+            $di->get(UserApi::class),
             new ConsoleOutput(),
-            Di::get(CliQuestionService::class)
+            $di->get(CliQuestionService::class)
         );
     },
-    CreateUserSessionService::class => static function () {
+    CreateUserSessionService::class => static function (ContainerInterface $di) {
         return new CreateUserSessionService(
             new OrmFactory(),
-            Di::get(FetchUserService::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+            $di->get(FetchUserService::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    DeleteUserService::class => static function () {
+    DeleteUserService::class => static function (ContainerInterface $di) {
         return new DeleteUserService(
-            Di::get(PDO::class),
-            Di::get(EventDispatcher::class)
+            $di->get(PDO::class),
+            $di->get(EventDispatcher::class)
         );
     },
-    FetchCurrentUserService::class => static function () {
+    FetchCurrentUserService::class => static function (ContainerInterface $di) {
         return new FetchCurrentUserService(
             new OrmFactory(),
-            Di::get(CookieApi::class),
-            Di::get(FetchUserService::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+            $di->get(CookieApi::class),
+            $di->get(FetchUserService::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    FetchUserService::class => static function () {
+    FetchUserService::class => static function (ContainerInterface $di) {
         return new FetchUserService(
             new DbFactory(),
-            Di::get(FetchUsersService::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+            $di->get(FetchUsersService::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    FetchUsersService::class => static function () {
+    FetchUsersService::class => static function (ContainerInterface $di) {
         return new FetchUsersService(
-            Di::get(PDO::class),
-            Di::get(BuildQueryService::class),
-            Di::get(UserRecordToModelTransformer::class)
+            $di->get(PDO::class),
+            $di->get(BuildQueryService::class),
+            $di->get(UserRecordToModelTransformer::class)
         );
     },
-    GeneratePasswordResetToken::class => static function () {
+    GeneratePasswordResetToken::class => static function (ContainerInterface $di) {
         return new GeneratePasswordResetToken(
             new OrmFactory(),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+            $di->get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    LogCurrentUserOutService::class => static function () {
+    LogCurrentUserOutService::class => static function (ContainerInterface $di) {
         return new LogCurrentUserOutService(
             new OrmFactory(),
-            Di::get(CookieApi::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+            $di->get(CookieApi::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    LogInAction::class => static function () {
+    LogInAction::class => static function (ContainerInterface $di) {
         return new LogInAction(
-            Di::get(UserApi::class),
+            $di->get(UserApi::class),
             new Response(),
-            Di::get(FlashDataApi::class),
-            Di::get(DataStore::class)
+            $di->get(FlashDataApi::class),
+            $di->get(DataStore::class)
         );
     },
-    LogUserInService::class => static function () {
+    LogUserInService::class => static function (ContainerInterface $di) {
         return new LogUserInService(
-            Di::get(CookieApi::class),
-            Di::get(SaveUserService::class),
-            Di::get(FetchUserService::class),
-            Di::get(EventDispatcher::class),
-            Di::get(CreateUserSessionService::class),
-            Di::get(ValidateUserPasswordService::class)
+            $di->get(CookieApi::class),
+            $di->get(SaveUserService::class),
+            $di->get(FetchUserService::class),
+            $di->get(EventDispatcher::class),
+            $di->get(CreateUserSessionService::class),
+            $di->get(ValidateUserPasswordService::class)
         );
     },
-    RegisterUserService::class => static function () {
+    RegisterUserService::class => static function (ContainerInterface $di) {
         return new RegisterUserService(
-            Di::get(SaveUserService::class),
-            Di::get(EventDispatcher::class)
+            $di->get(SaveUserService::class),
+            $di->get(EventDispatcher::class)
         );
     },
-    ResetTokenGarbageCollectionService::class => static function () {
-        return new ResetTokenGarbageCollectionService(Di::get(PDO::class));
+    ResetTokenGarbageCollectionService::class => static function (ContainerInterface $di) {
+        return new ResetTokenGarbageCollectionService($di->get(PDO::class));
     },
-    SaveUserService::class => static function () {
+    SaveUserService::class => static function (ContainerInterface $di) {
         return new SaveUserService(
-            Di::get(PDO::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec'),
-            Di::get(EventDispatcher::class)
+            $di->get(PDO::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec'),
+            $di->get(EventDispatcher::class)
         );
     },
-    SessionGarbageCollectionService::class => static function () {
-        return new SessionGarbageCollectionService(Di::get(PDO::class));
+    SessionGarbageCollectionService::class => static function (ContainerInterface $di) {
+        return new SessionGarbageCollectionService($di->get(PDO::class));
     },
-    UserApi::class => static function () {
-        return new UserApi(new Di(), new DbFactory());
+    UserApi::class => static function (ContainerInterface $di) {
+        return new UserApi($di, new DbFactory());
     },
-    ValidateUserPasswordService::class => static function () {
+    ValidateUserPasswordService::class => static function (ContainerInterface $di) {
         return new ValidateUserPasswordService(
-            Di::get(FetchUserService::class)
+            $di->get(FetchUserService::class)
         );
     },
-    GetUserByPasswordResetTokenService::class => static function () {
+    GetUserByPasswordResetTokenService::class => static function (ContainerInterface $di) {
         return new GetUserByPasswordResetTokenService(
             new OrmFactory(),
-            Di::get(FetchUserService::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec')
+            $di->get(FetchUserService::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec')
         );
     },
-    ResetPasswordByTokenService::class => static function () {
+    ResetPasswordByTokenService::class => static function (ContainerInterface $di) {
         return new ResetPasswordByTokenService(
-            Di::get(PDO::class),
-            Di::get(SaveUserService::class),
-            Di::get('UuidFactoryWithOrderedTimeCodec'),
-            Di::get(GetUserByPasswordResetTokenService::class)
+            $di->get(PDO::class),
+            $di->get(SaveUserService::class),
+            $di->get('UuidFactoryWithOrderedTimeCodec'),
+            $di->get(GetUserByPasswordResetTokenService::class)
         );
     },
-    SetNewPasswordService::class => static function () {
-        return new SetNewPasswordService(Di::get(SaveUserService::class));
+    SetNewPasswordService::class => static function (ContainerInterface $di) {
+        return new SetNewPasswordService($di->get(SaveUserService::class));
     },
-    UserRecordToModelTransformer::class => static function () {
+    UserRecordToModelTransformer::class => static function (ContainerInterface $di) {
         return new UserRecordToModelTransformer();
     },
-    UserTwigExtension::class => static function () {
-        return new UserTwigExtension(Di::get(UserApi::class));
+    UserTwigExtension::class => static function (ContainerInterface $di) {
+        return new UserTwigExtension($di->get(UserApi::class));
     },
 ];
