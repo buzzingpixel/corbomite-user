@@ -15,6 +15,8 @@ use corbomite\requestdatastore\DataStore;
 use corbomite\user\actions\CreateMigrationsAction;
 use corbomite\user\actions\CreateUserAction;
 use corbomite\user\http\actions\LogInAction;
+use corbomite\user\interfaces\UserApiInterface;
+use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
 use corbomite\user\PhpCalls;
 use corbomite\user\services\CreateUserSessionService;
 use corbomite\user\services\DeleteUserService;
@@ -158,6 +160,18 @@ return [
     UserApi::class => static function (ContainerInterface $di) {
         return new UserApi($di, new DbFactory());
     },
+    UserApiInterface::class => static function (ContainerInterface $di) {
+        return $di->get(UserApi::class);
+    },
+    UserRecordToModelTransformer::class => static function (ContainerInterface $di) {
+        return new UserRecordToModelTransformer();
+    },
+    UserRecordToModelTransformerInterface::class => static function (ContainerInterface $di) {
+        return $di->get(UserRecordToModelTransformer::class);
+    },
+    UserTwigExtension::class => static function (ContainerInterface $di) {
+        return new UserTwigExtension($di->get(UserApi::class));
+    },
     ValidateUserPasswordService::class => static function (ContainerInterface $di) {
         return new ValidateUserPasswordService(
             $di->get(FetchUserService::class)
@@ -180,11 +194,5 @@ return [
     },
     SetNewPasswordService::class => static function (ContainerInterface $di) {
         return new SetNewPasswordService($di->get(SaveUserService::class));
-    },
-    UserRecordToModelTransformer::class => static function (ContainerInterface $di) {
-        return new UserRecordToModelTransformer();
-    },
-    UserTwigExtension::class => static function (ContainerInterface $di) {
-        return new UserTwigExtension($di->get(UserApi::class));
     },
 ];
