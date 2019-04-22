@@ -1,48 +1,48 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use DateTime;
-use Exception;
-use DateTimeZone;
-use Ramsey\Uuid\UuidFactoryInterface;
 use buzzingpixel\cookieapi\CookieApi;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
 use corbomite\user\interfaces\UserModelInterface;
+use DateTime;
+use DateTimeZone;
+use Ramsey\Uuid\UuidFactoryInterface;
+use Throwable;
+use function time;
 
 class FetchCurrentUserService
 {
+    /** @var OrmFactory */
     private $ormFactory;
+    /** @var CookieApi */
     private $cookieApi;
+    /** @var FetchUserService */
     private $fetchUser;
+    /** @var UuidFactoryInterface */
     private $uuidFactory;
 
     public function __construct(
-        OrmFactory $atlas,
+        OrmFactory $ormFactory,
         CookieApi $cookieApi,
         FetchUserService $fetchUser,
         UuidFactoryInterface $uuidFactory
     ) {
-        $this->ormFactory = $atlas;
-        $this->cookieApi = $cookieApi;
-        $this->fetchUser = $fetchUser;
+        $this->ormFactory  = $ormFactory;
+        $this->cookieApi   = $cookieApi;
+        $this->fetchUser   = $fetchUser;
         $this->uuidFactory = $uuidFactory;
     }
 
-    public function __invoke(): ?UserModelInterface
+    public function __invoke() : ?UserModelInterface
     {
         return $this->fetchCurrentUser();
     }
 
-    public function fetchCurrentUser(): ?UserModelInterface
+    public function fetchCurrentUser() : ?UserModelInterface
     {
         $cookie = $this->cookieApi->retrieveCookie('user_session_token');
 
@@ -72,14 +72,14 @@ class FetchCurrentUserService
          * We don't want to touch the session (write to the database) every time
          * we fetch the current user. So we'll only do it once every 24 hours
          */
-        $h24 = 86400;
+        $h24  = 86400;
         $diff = time() - $lastTouchedAt->getTimestamp();
 
         if ($diff > $h24) {
             /** @noinspection PhpUnhandledExceptionInspection */
             $dateTime = new DateTime();
             $dateTime->setTimezone(new DateTimeZone('UTC'));
-            $sessionRecord->last_touched_at = $dateTime->format('Y-m-d H:i:s');
+            $sessionRecord->last_touched_at           = $dateTime->format('Y-m-d H:i:s');
             $sessionRecord->last_touched_at_time_zone = $dateTime->getTimezone()
                 ->getName();
             $this->ormFactory->makeOrm()->persist($sessionRecord);
@@ -87,7 +87,7 @@ class FetchCurrentUserService
 
         try {
             return $this->fetchUser->fetchUser($sessionRecord->user_guid);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }

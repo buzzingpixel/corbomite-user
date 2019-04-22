@@ -1,41 +1,40 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use DateTime;
-use DateTimeZone;
-use Ramsey\Uuid\UuidFactoryInterface;
 use corbomite\db\Factory as OrmFactory;
 use corbomite\user\data\UserSession\UserSession;
 use corbomite\user\exceptions\UserDoesNotExistException;
+use DateTime;
+use DateTimeZone;
+use Ramsey\Uuid\UuidFactoryInterface;
+use function preg_match;
 
 class CreateUserSessionService
 {
-    private $fetchUser;
+    /** @var OrmFactory */
     private $ormFactory;
+    /** @var FetchUserService */
+    private $fetchUser;
+    /** @var UuidFactoryInterface */
     private $uuidFactory;
 
     public function __construct(
-        OrmFactory $atlas,
+        OrmFactory $ormFactory,
         FetchUserService $fetchUser,
         UuidFactoryInterface $uuidFactory
     ) {
-        $this->ormFactory = $atlas;
-        $this->fetchUser = $fetchUser;
+        $this->ormFactory  = $ormFactory;
+        $this->fetchUser   = $fetchUser;
         $this->uuidFactory = $uuidFactory;
     }
 
     /**
      * @throws UserDoesNotExistException
      */
-    public function __invoke(string $userGuid): string
+    public function __invoke(string $userGuid) : string
     {
         return $this->createUserSession($userGuid);
     }
@@ -43,7 +42,7 @@ class CreateUserSessionService
     /**
      * @throws UserDoesNotExistException
      */
-    public function createUserSession(string $userGuid): string
+    public function createUserSession(string $userGuid) : string
     {
         if (! $this->fetchUser->fetchUser($userGuid)) {
             throw new UserDoesNotExistException();
@@ -62,12 +61,12 @@ class CreateUserSessionService
         /** @noinspection PhpUnhandledExceptionInspection */
         $sessionGuid = $this->uuidFactory->uuid1();
 
-        $record = $ormFactory->newRecord(UserSession::class);
-        $record->guid = $sessionGuid->getBytes();
-        $record->user_guid = $userGuid;
-        $record->added_at = $dateTime->format('Y-m-d H:i:s');
-        $record->added_at_time_zone = $dateTime->getTimezone()->getName();
-        $record->last_touched_at = $dateTime->format('Y-m-d H:i:s');
+        $record                            = $ormFactory->newRecord(UserSession::class);
+        $record->guid                      = $sessionGuid->getBytes();
+        $record->user_guid                 = $userGuid;
+        $record->added_at                  = $dateTime->format('Y-m-d H:i:s');
+        $record->added_at_time_zone        = $dateTime->getTimezone()->getName();
+        $record->last_touched_at           = $dateTime->format('Y-m-d H:i:s');
         $record->last_touched_at_time_zone = $dateTime->getTimezone()->getName();
 
         $ormFactory->persist($record);
@@ -75,7 +74,10 @@ class CreateUserSessionService
         return $sessionGuid->toString();
     }
 
-    private function isBinary($str): bool
+    /**
+     * @param mixed $str
+     */
+    private function isBinary($str) : bool
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $str) > 0;
     }

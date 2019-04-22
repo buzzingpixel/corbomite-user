@@ -1,25 +1,23 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use PDO;
-use corbomite\user\data\User\User;
 use corbomite\db\interfaces\BuildQueryInterface;
 use corbomite\db\interfaces\QueryModelInterface;
+use corbomite\user\data\User\User;
 use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
+use PDO;
 
 class FetchUsersService
 {
+    /** @var PDO */
     private $pdo;
+    /** @var BuildQueryInterface */
     private $buildQuery;
+    /** @var UserRecordToModelTransformerInterface */
     private $userRecordToModel;
 
     public function __construct(
@@ -27,15 +25,15 @@ class FetchUsersService
         BuildQueryInterface $buildQuery,
         UserRecordToModelTransformerInterface $userRecordToModel
     ) {
-        $this->pdo = $pdo;
-        $this->buildQuery = $buildQuery;
+        $this->pdo               = $pdo;
+        $this->buildQuery        = $buildQuery;
         $this->userRecordToModel = $userRecordToModel;
     }
 
     /**
      * @return UserModelInterface[]
      */
-    public function __invoke(QueryModelInterface $queryModel): array
+    public function __invoke(QueryModelInterface $queryModel) : array
     {
         return $this->fetch($queryModel);
     }
@@ -43,7 +41,7 @@ class FetchUsersService
     /**
      * @return UserModelInterface[]
      */
-    public function fetch(QueryModelInterface $queryModel): array
+    public function fetch(QueryModelInterface $queryModel) : array
     {
         $query = $this->buildQuery->build(User::class, $queryModel);
         $query->columns('*');

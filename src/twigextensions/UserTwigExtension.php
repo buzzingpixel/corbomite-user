@@ -1,20 +1,16 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2018 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\twigextensions;
 
-use Twig_Function;
-use Twig_Extension;
 use corbomite\user\interfaces\UserApiInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class UserTwigExtension extends Twig_Extension
+class UserTwigExtension extends AbstractExtension
 {
+    /** @var UserApiInterface */
     private $userApi;
 
     public function __construct(UserApiInterface $userApi)
@@ -22,12 +18,15 @@ class UserTwigExtension extends Twig_Extension
         $this->userApi = $userApi;
     }
 
-    public function getFunctions(): array
+    /**
+     * @return TwigFunction[]
+     */
+    public function getFunctions() : array
     {
-        return [new Twig_Function('userApi', [$this, 'userApi'])];
+        return [new TwigFunction('userApi', [$this, 'userApi'])];
     }
 
-    public function userApi(): UserApiInterface
+    public function userApi() : UserApiInterface
     {
         return $this->userApi;
     }

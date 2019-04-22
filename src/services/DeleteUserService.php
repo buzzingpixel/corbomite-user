@@ -1,39 +1,36 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use PDO;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\events\UserAfterDeleteEvent;
 use corbomite\user\events\UserBeforeDeleteEvent;
 use corbomite\user\interfaces\UserModelInterface;
-use corbomite\events\interfaces\EventDispatcherInterface;
+use PDO;
 
 class DeleteUserService
 {
+    /** @var PDO */
     private $pdo;
+    /** @var EventDispatcherInterface */
     private $dispatcher;
 
     public function __construct(
         PDO $pdo,
         EventDispatcherInterface $dispatcher
     ) {
-        $this->pdo = $pdo;
+        $this->pdo        = $pdo;
         $this->dispatcher = $dispatcher;
     }
 
-    public function __invoke(UserModelInterface $userModel): void
+    public function __invoke(UserModelInterface $userModel) : void
     {
         $this->delete($userModel);
     }
 
-    public function delete(UserModelInterface $user): void
+    public function delete(UserModelInterface $user) : void
     {
         $this->dispatcher->dispatch(new UserBeforeDeleteEvent($user));
 

@@ -1,36 +1,36 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
-use corbomite\user\models\UserModel;
+use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\events\UserAfterRegisterEvent;
 use corbomite\user\events\UserBeforeRegisterEvent;
-use corbomite\user\exceptions\UserExistsException;
-use corbomite\user\exceptions\PasswordTooShortException;
-use corbomite\user\exceptions\InvalidUserModelException;
-use corbomite\user\exceptions\UserDoesNotExistException;
-use corbomite\events\interfaces\EventDispatcherInterface;
 use corbomite\user\exceptions\InvalidEmailAddressException;
+use corbomite\user\exceptions\InvalidUserModelException;
+use corbomite\user\exceptions\PasswordTooShortException;
+use corbomite\user\exceptions\UserDoesNotExistException;
+use corbomite\user\exceptions\UserExistsException;
+use corbomite\user\models\UserModel;
+use const PASSWORD_DEFAULT;
+use function mb_strlen;
+use function password_hash;
 
 class RegisterUserService
 {
     public const MIN_PASSWORD_LENGTH = 8;
 
+    /** @var SaveUserService */
     private $saveUser;
+    /** @var EventDispatcherInterface */
     private $dispatcher;
 
     public function __construct(
         SaveUserService $saveUser,
         EventDispatcherInterface $dispatcher
     ) {
-        $this->saveUser = $saveUser;
+        $this->saveUser   = $saveUser;
         $this->dispatcher = $dispatcher;
     }
 
@@ -41,7 +41,7 @@ class RegisterUserService
      * @throws UserDoesNotExistException
      * @throws InvalidEmailAddressException
      */
-    public function __invoke(string $emailAddress, string $password): void
+    public function __invoke(string $emailAddress, string $password) : void
     {
         $this->registerUser($emailAddress, $password);
     }
@@ -53,9 +53,9 @@ class RegisterUserService
      * @throws UserDoesNotExistException
      * @throws InvalidEmailAddressException
      */
-    public function registerUser(string $emailAddress, string $password): void
+    public function registerUser(string $emailAddress, string $password) : void
     {
-        if (\strlen($password) < self::MIN_PASSWORD_LENGTH) {
+        if (mb_strlen($password) < self::MIN_PASSWORD_LENGTH) {
             throw new PasswordTooShortException();
         }
 

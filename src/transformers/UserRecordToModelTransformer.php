@@ -1,28 +1,33 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\transformers;
 
-use DateTime;
-use DateTimeZone;
-use corbomite\user\models\UserModel;
 use corbomite\user\interfaces\UserModelInterface;
 use corbomite\user\interfaces\UserRecordToModelTransformerInterface;
+use corbomite\user\models\UserModel;
+use DateTime;
+use DateTimeZone;
+use function is_string;
+use function json_decode;
 
 class UserRecordToModelTransformer implements UserRecordToModelTransformerInterface
 {
-    public function __invoke(array $record): UserModelInterface
+    /**
+     * @param mixed[] $record
+     */
+    public function __invoke(array $record) : UserModelInterface
     {
         return $this->transform($record);
     }
 
-    public function transform(array $record): UserModelInterface
+    /** @noinspection PhpDocMissingThrowsInspection */
+
+    /**
+     * @param mixed[] $record
+     */
+    public function transform(array $record) : UserModelInterface
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $addedAt = new DateTime(
@@ -35,7 +40,7 @@ class UserRecordToModelTransformer implements UserRecordToModelTransformerInterf
         $model->emailAddress($record['email_address']);
         $model->passwordHash($record['password_hash']);
         $model->userData(json_decode(
-            \is_string($record['user_data']) ? $record['user_data'] : '',
+            is_string($record['user_data']) ? $record['user_data'] : '',
             true
         ));
         $model->addedAt($addedAt);

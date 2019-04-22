@@ -1,18 +1,15 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\services;
 
 use corbomite\user\exceptions\UserDoesNotExistException;
+use function password_verify;
 
 class ValidateUserPasswordService
 {
+    /** @var FetchUserService */
     private $fetchUser;
 
     public function __construct(FetchUserService $fetchUser)
@@ -23,7 +20,7 @@ class ValidateUserPasswordService
     /**
      * @throws UserDoesNotExistException
      */
-    public function __invoke(string $identifier, string $password): bool
+    public function __invoke(string $identifier, string $password) : bool
     {
         return $this->validateUserPassword($identifier, $password);
     }
@@ -34,8 +31,10 @@ class ValidateUserPasswordService
     public function validateUserPassword(
         string $identifier,
         string $password
-    ): bool {
-        if (! $user = $this->fetchUser->fetchUser($identifier)) {
+    ) : bool {
+        $user = $this->fetchUser->fetchUser($identifier);
+
+        if (! $user) {
             throw new UserDoesNotExistException();
         }
 

@@ -1,11 +1,6 @@
 <?php
-declare(strict_types=1);
 
-/**
- * @author TJ Draper <tj@buzzingpixel.com>
- * @copyright 2019 BuzzingPixel, LLC
- * @license Apache-2.0
- */
+declare(strict_types=1);
 
 namespace corbomite\user\actions;
 
@@ -15,8 +10,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateUserAction
 {
+    /** @var UserApiInterface */
     private $userApi;
+    /** @var OutputInterface */
     private $consoleOutput;
+    /** @var CliQuestionService */
     private $cliQuestionService;
 
     public function __construct(
@@ -24,12 +22,12 @@ class CreateUserAction
         OutputInterface $consoleOutput,
         CliQuestionService $cliQuestionService
     ) {
-        $this->userApi = $userApi;
-        $this->consoleOutput = $consoleOutput;
+        $this->userApi            = $userApi;
+        $this->consoleOutput      = $consoleOutput;
         $this->cliQuestionService = $cliQuestionService;
     }
 
-    public function __invoke()
+    public function __invoke() : void
     {
         /** @noinspection PhpUnhandledExceptionInspection */
         $this->userApi->registerUser(
